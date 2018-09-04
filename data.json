@@ -1,0 +1,20 @@
+{
+  "degrees": {
+    "Sistemas de Información": "61SI",
+    "Ingeniería de Computadores": "61CI",
+    "Ingeniería del Software": "61IW",
+    "Tecnologías de la Información": "61TI"
+  },
+  "etsisi_urls": {
+    "61SI": "https://www.etsisi.upm.es/estudios/grados/61si/guias/curso-2018-19",
+    "61CI": "https://www.etsisi.upm.es/estudios/grados/61ci/guias/curso-2018-19",
+    "61IW": "https://www.etsisi.upm.es/estudios/grados/61iw/guias/curso-2018-19",
+    "61TI": "https://www.etsisi.upm.es/estudios/grados/61TI/guias/curso-2018-19"
+  },
+  "upm_jsons": {
+    "61SI": "https://www.upm.es/wapi_upm/estaticos/academico/201718/61SI_asignaturas_v2.json",
+    "61CI": "https://www.upm.es/wapi_upm/estaticos/academico/201718/61CI_asignaturas_v2.json",
+    "61IW": "https://www.upm.es/wapi_upm/estaticos/academico/201718/61IW_asignaturas_v2.json",
+    "61TI": "https://www.upm.es/wapi_upm/estaticos/academico/201718/61TI_asignaturas_v2.json"
+  }
+}
