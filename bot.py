@@ -134,16 +134,25 @@ def notifications(bot, update):
     bot.sendMessage(chat_id=update.message.chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
 
 
-def schedule_notify(bot):
+def schedule(bot, update):
     global chat_ids_list
     global schedule_list
-    bot.send_message(chat_id=15360527, text="Enviando horarios")
-    for idx, chat in enumerate(chat_ids_list):
-        try:
-            text = "Va a empezar " + str(schedule_list[chat][datetime.datetime.now().hour])
-            bot.send_message(chat_id=chat_ids_list[chat]["chatid"], text=text)
-        except:
-            pass
+
+    def schedule_parser(schedule):
+        print(schedule)
+        parsed_schedule = ""
+        for hora in schedule:
+            parsed_schedule = parsed_schedule + "\nA las " + str(hora) + "h -> " + schedule[hora]
+        return parsed_schedule
+
+    try:
+        group = update.message.chat.title.replace(" ETSISI", "") # Borro contenido de los títulos que me sobra
+        text = "Horario de hoy para " + group + ":" + schedule_parser(
+            schedule_list[group][str(datetime.datetime.today().weekday())])
+        print(text)
+        bot.send_message(chat_id=update.message.chat_id, text=text)
+    except:
+        bot.send_message(chat_id=update.message.chat_id, text="No he podido procesar tu solicitud de horario.")
 
 
 if __name__ == "__main__":
@@ -161,6 +170,7 @@ if __name__ == "__main__":
         dispatcher.add_handler(CommandHandler('noticias', news))
         dispatcher.add_handler(CommandHandler('eventos', events))
         dispatcher.add_handler(CommandHandler('avisos', notifications))
+        dispatcher.add_handler(CommandHandler('horario', schedule))
         dispatcher.add_error_handler(error_callback)
 
     except Exception as ex:
