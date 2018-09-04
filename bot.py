@@ -85,7 +85,7 @@ def is_call_available(name, chat_id, cooldown):
 
 def help(bot, update):
     log_message(update)
-    bot.sendMessage(update.message.chat_id, settings.help_string, parse_mode=telegram.ParseMode.MARKDOWN)
+    bot.sendMessage(update.message.chat_id, settings.help_string, parse_mode=telegram.ParseMode.HTML)
 
 
 def log_message(update):
