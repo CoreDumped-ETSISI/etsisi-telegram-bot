@@ -140,10 +140,11 @@ def schedule(bot, update):
 
     def schedule_parser(schedule):
         print(schedule)
-        parsed_schedule = ""
-        for hora in schedule:
-            parsed_schedule = parsed_schedule + "\nA las " + str(hora) + "h -> " + schedule[hora]
-        return parsed_schedule
+        parsedSchedule = [""]
+        scheduleKeys = sorted(schedule, key=lambda s: int(s.split(":")[0]))
+        for hour in scheduleKeys:
+            parsedSchedule.append("A las %sh -> %s" % (hour, schedule[hour]))
+        return "\n".join(parsedSchedule)
 
     try:
         group = update.message.chat.title.replace(" ETSISI", "") # Borro contenido de los títulos que me sobra
