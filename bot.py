@@ -14,7 +14,7 @@ import logger
 from logger import get_logger
 from data_loader import DataLoader
 import sys
-from telegram.ext import Updater, CommandHandler, MessageHandler, BaseFilter
+from telegram.ext import Updater, CommandHandler, MessageHandler, BaseFilter, Filters
 from random import normalvariate
 from telegram.error import (TelegramError, Unauthorized, BadRequest,
                             TimedOut, ChatMigrated, NetworkError)
@@ -147,13 +147,16 @@ def schedule(bot, update):
         return "\n".join(parsedSchedule)
 
     try:
-        group = update.message.chat.title.replace(" ETSISI", "") # Borro contenido de los títulos que me sobra
+        group = update.message.chat.title.replace(" ETSISI", "")  # Borro contenido de los títulos que me sobra
         text = "Horario de hoy para " + group + ":" + schedule_parser(
-            schedule_list[group][str(datetime.datetime.today().weekday())])
-        print(text)
+            schedule_list[group][str(datetime.datetime.today().weekday())]) + "\n\n Gracias a Yadkee por su ayuda"
         bot.send_message(chat_id=update.message.chat_id, text=text)
     except:
         bot.send_message(chat_id=update.message.chat_id, text="No he podido procesar tu solicitud de horario.")
+
+
+def delete_message(bot, update):
+    bot.deleteMessage(update.message.chat_id, update.message.message_id)
 
 
 if __name__ == "__main__":
@@ -172,6 +175,7 @@ if __name__ == "__main__":
         dispatcher.add_handler(CommandHandler('eventos', events))
         dispatcher.add_handler(CommandHandler('avisos', notifications))
         dispatcher.add_handler(CommandHandler('horario', schedule))
+        dispatcher.add_handler(MessageHandler(Filters.status_update, delete_message))
         dispatcher.add_error_handler(error_callback)
 
     except Exception as ex:
