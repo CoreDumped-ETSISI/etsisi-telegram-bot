@@ -63,6 +63,10 @@ def load_settings():
     last_function_calls = {}
 
 
+def delete_message(bot, update):
+    bot.deleteMessage(update.message.chat_id, update.message.message_id)
+
+
 def is_call_available(name, chat_id, cooldown):
     global last_function_calls
     now = datetime.datetime.now()
@@ -84,8 +88,9 @@ def is_call_available(name, chat_id, cooldown):
 
 
 def help(bot, update):
-    log_message(update)
-    bot.sendMessage(update.message.chat_id, settings.help_string, parse_mode=telegram.ParseMode.HTML)
+    if is_call_available(help, update.message.chat_id, 1440):
+        log_message(update)
+        bot.sendMessage(update.message.chat_id, settings.help_string, parse_mode=telegram.ParseMode.HTML)
 
 
 def log_message(update):
@@ -108,30 +113,38 @@ def reload_data(bot, update):
 
 
 def news(bot, update):
-    logger.info("Getting news")
-    text = "Estas son las últimas noticias que aparecen en la web: \n"
-    news_list = news_json_scraper()
-    for idx, new in enumerate(news_list):
-        text = text + str(idx) + ") " + news_list[new]["a-link"] + "\n"
-    bot.sendMessage(chat_id=update.message.chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
+    if is_call_available(help, update.message.chat_id, 1440):
+        log_message(update)
+        logger.info("Getting news")
+        text = "Estas son las últimas noticias que aparecen en la web: \n"
+        news_list = news_json_scraper()
+        for idx, new in enumerate(news_list):
+            text = text + str(idx) + ") " + news_list[new]["a-link"] + "\n"
+        bot.sendMessage(chat_id=update.message.chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
 
 
 def events(bot, update):
-    logger.info("Getting news")
-    text = "Estas son los últimos eventos que aparecen en la web: \n"
-    events_list = events_json_scraper()
-    for idx, new in enumerate(events_list):
-        text = text + str(idx) + ") " + events_list[new]["a-link"] + "\n"
-    bot.sendMessage(chat_id=update.message.chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
+    if is_call_available(help, update.message.chat_id, 1440):
+        log_message(update)
+        logger.info("Getting news")
+        text = "Estas son los últimos eventos que aparecen en la web: \n"
+        events_list = events_json_scraper()
+        for idx, new in enumerate(events_list):
+            text = text + str(idx) + ") " + events_list[new]["a-link"] + "\n"
+        bot.sendMessage(chat_id=update.message.chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
 
 
 def notifications(bot, update):
-    logger.info("Getting news")
-    text = "Estas son los últimos avisos que aparecen en la web: \n"
-    notifications_list = avisos_json_scraper()
-    for idx, new in enumerate(notifications_list):
-        text = text + str(idx) + ") " + notifications_list[new]["a-link"] + "\n"
-    bot.sendMessage(chat_id=update.message.chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
+    if is_call_available(help, update.message.chat_id, 1440):
+        log_message(update)
+        logger.info("Getting news")
+        text = "Estas son los últimos avisos que aparecen en la web: \n"
+        notifications_list = avisos_json_scraper()
+        for idx, new in enumerate(notifications_list):
+            text = text + str(idx) + ") " + notifications_list[new]["a-link"] + "\n"
+        bot.sendMessage(chat_id=update.message.chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
+    else:
+        delete_message(bot, update)
 
 
 def schedule(bot, update):
@@ -146,17 +159,17 @@ def schedule(bot, update):
             parsedSchedule.append("A las %sh -> %s" % (hour, schedule[hour]))
         return "\n".join(parsedSchedule)
 
-    try:
-        group = update.message.chat.title.replace(" ETSISI", "")  # Borro contenido de los títulos que me sobra
-        text = "Horario de hoy para " + group + ":" + schedule_parser(
-            schedule_list[group][str(datetime.datetime.today().weekday())]) + "\n\n Gracias a Yadkee por su ayuda"
-        bot.send_message(chat_id=update.message.chat_id, text=text)
-    except:
-        bot.send_message(chat_id=update.message.chat_id, text="No he podido procesar tu solicitud de horario.")
-
-
-def delete_message(bot, update):
-    bot.deleteMessage(update.message.chat_id, update.message.message_id)
+    if is_call_available(help, update.message.chat_id, 20):
+        log_message(update)
+        try:
+            group = update.message.chat.title.replace(" ETSISI", "")  # Borro contenido de los títulos que me sobra
+            text = "Horario de hoy para " + group + ":" + schedule_parser(
+                schedule_list[group][str(datetime.datetime.today().weekday())]) + "\n\n Gracias a Yadkee por su ayuda"
+            bot.send_message(chat_id=update.message.chat_id, text=text)
+        except:
+            bot.send_message(chat_id=update.message.chat_id, text="No he podido procesar tu solicitud de horario.")
+    else:
+        delete_message(bot, update)
 
 
 if __name__ == "__main__":
