@@ -87,8 +87,8 @@ def is_call_available(name, chat_id, cooldown):
         return True
 
 
-def help(bot, update):
-    if is_call_available(help, update.message.chat_id, 1440):
+def help_command(bot, update):
+    if is_call_available("help_command", update.message.chat_id, 1440):
         log_message(update)
         bot.sendMessage(update.message.chat_id, settings.help_string, parse_mode=telegram.ParseMode.HTML)
 
@@ -112,8 +112,8 @@ def reload_data(bot, update):
         bot.send_message(chat_id=update.message.chat_id, text="Datos cargados")
 
 
-def news(bot, update):
-    if is_call_available(help, update.message.chat_id, 1440):
+def news_command(bot, update):
+    if is_call_available("news_command", update.message.chat_id, 1440):
         log_message(update)
         logger.info("Getting news")
         text = "Estas son las últimas noticias que aparecen en la web: \n"
@@ -123,8 +123,8 @@ def news(bot, update):
         bot.sendMessage(chat_id=update.message.chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
 
 
-def events(bot, update):
-    if is_call_available(help, update.message.chat_id, 1440):
+def events_command(bot, update):
+    if is_call_available("events", update.message.chat_id, 1440):
         log_message(update)
         logger.info("Getting news")
         text = "Estas son los últimos eventos que aparecen en la web: \n"
@@ -134,8 +134,8 @@ def events(bot, update):
         bot.sendMessage(chat_id=update.message.chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
 
 
-def notifications(bot, update):
-    if is_call_available(help, update.message.chat_id, 1440):
+def notifications_command(bot, update):
+    if is_call_available("help", update.message.chat_id, 1440):
         log_message(update)
         logger.info("Getting news")
         text = "Estas son los últimos avisos que aparecen en la web: \n"
@@ -147,19 +147,19 @@ def notifications(bot, update):
         delete_message(bot, update)
 
 
-def schedule(bot, update):
+def schedule_command(bot, update):
     global chat_ids_list
     global schedule_list
 
     def schedule_parser(schedule):
         print(schedule)
-        parsedSchedule = [""]
-        scheduleKeys = sorted(schedule, key=lambda s: int(s.split(":")[0]))
-        for hour in scheduleKeys:
-            parsedSchedule.append("A las %sh -> %s" % (hour, schedule[hour]))
-        return "\n".join(parsedSchedule)
+        parsed_schedule = [""]
+        schedule_keys = sorted(schedule, key=lambda s: int(s.split(":")[0]))
+        for hour in schedule_keys:
+            parsed_schedule.append("A las %sh -> %s" % (hour, schedule[hour]))
+        return "\n".join(parsed_schedule)
 
-    if is_call_available(help, update.message.chat_id, 20):
+    if is_call_available("schedule", update.message.chat_id, 20):
         log_message(update)
         try:
             group = update.message.chat.title.replace(" ETSISI", "")  # Borro contenido de los títulos que me sobra
@@ -182,12 +182,12 @@ if __name__ == "__main__":
         logger.info("Conectando con la API de Telegram.")
         updater = Updater(settings.telegram_token)
         dispatcher = updater.dispatcher
-        dispatcher.add_handler(CommandHandler('help', help))
+        dispatcher.add_handler(CommandHandler('help', help_command))
         dispatcher.add_handler(CommandHandler('reload', reload_data))
-        dispatcher.add_handler(CommandHandler('noticias', news))
-        dispatcher.add_handler(CommandHandler('eventos', events))
-        dispatcher.add_handler(CommandHandler('avisos', notifications))
-        dispatcher.add_handler(CommandHandler('horario', schedule))
+        dispatcher.add_handler(CommandHandler('noticias', news_command))
+        dispatcher.add_handler(CommandHandler('eventos', events_command))
+        dispatcher.add_handler(CommandHandler('avisos', notifications_command))
+        dispatcher.add_handler(CommandHandler('horario', schedule_command))
         dispatcher.add_handler(MessageHandler(Filters.status_update, delete_message))
         dispatcher.add_error_handler(error_callback)
 
