@@ -80,7 +80,7 @@ def is_call_available(name, chat_id, cooldown):
                 last_function_calls[name][chat_id] = now
                 return True
         else:
-            last_function_calls[name] = {chat_id: now}
+            last_function_calls[name][chat_id] = now
             return True
     else:
         last_function_calls[name] = {chat_id: now}
@@ -88,7 +88,7 @@ def is_call_available(name, chat_id, cooldown):
 
 
 def help_command(bot, update):
-    if is_call_available("help_command", update.message.chat_id, 1440):
+    if is_call_available("help_command", update.message.chat_id, 180):
         log_message(update)
         bot.sendMessage(update.message.chat_id, settings.help_string, parse_mode=telegram.ParseMode.HTML)
 
@@ -113,7 +113,7 @@ def reload_data(bot, update):
 
 
 def news_command(bot, update):
-    if is_call_available("news_command", update.message.chat_id, 1440):
+    if is_call_available("news_command", update.message.chat_id, 180):
         log_message(update)
         logger.info("Getting news")
         text = "Estas son las últimas noticias que aparecen en la web: \n"
@@ -124,7 +124,7 @@ def news_command(bot, update):
 
 
 def events_command(bot, update):
-    if is_call_available("events", update.message.chat_id, 1440):
+    if is_call_available("events", update.message.chat_id, 180):
         log_message(update)
         logger.info("Getting news")
         text = "Estas son los últimos eventos que aparecen en la web: \n"
@@ -135,7 +135,7 @@ def events_command(bot, update):
 
 
 def notifications_command(bot, update):
-    if is_call_available("help", update.message.chat_id, 1440):
+    if is_call_available("help", update.message.chat_id, 180):
         log_message(update)
         logger.info("Getting news")
         text = "Estas son los últimos avisos que aparecen en la web: \n"
