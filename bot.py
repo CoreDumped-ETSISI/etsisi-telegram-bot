@@ -169,7 +169,6 @@ def schedule_command(bot, update, args):  # Add arguments for checking other's g
     if is_call_available("schedule", update.message.chat_id, 180):
         log_message(update)
         weekdays = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
-        centinela = True
         try:
             group = ""
             if args:
