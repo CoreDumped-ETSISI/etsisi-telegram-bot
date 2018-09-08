@@ -2,3 +2,4 @@ __pycache__/
 *.pyc
 *.log
 private-data.json
+chat_ids.json

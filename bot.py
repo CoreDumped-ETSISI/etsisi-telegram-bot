@@ -153,7 +153,6 @@ def schedule_command(bot, update, args):  # Add arguments for checking other's g
     global schedule_list
 
     def schedule_parser(schedule):
-        print(schedule)
         parsed_schedule = [""]
         schedule_keys = sorted(schedule, key=lambda s: int(s.split(":")[0]))
         for hour in schedule_keys:
@@ -166,13 +165,20 @@ def schedule_command(bot, update, args):  # Add arguments for checking other's g
             if update.message.chat_id < 0:  # ID's below 0 are groups.
                 group = update.message.chat.title.replace(" ETSISI", "")  # Borro contenido de los títulos que me sobra
                 if args:  # Ignore arguments if call is recieved from group.
-                    bot.send_message(chat_id=update.message.chat_id, text="No respondo peticiones de horario de otros grupos aquí para evitar SPAM. Inicia un chat privado conmigo y pregúntame.")
+                    bot.send_message(chat_id=update.message.chat_id,
+                                     text="No respondo peticiones de horario de otros grupos aquí para evitar SPAM. Inicia un chat privado conmigo y pregúntame.")
                     return
             else:
                 group = args[0].upper()
-            text = "Horario de hoy para " + group + ":" + schedule_parser(
-                schedule_list[group][str(datetime.datetime.today().weekday())]) + "\n\n Gracias a Yadkee por su ayuda"
-            bot.send_message(chat_id=update.message.chat_id, text=text)
+            if (str(datetime.datetime.today().weekday()) in range(1, 5)):
+                text = schedule_parser(schedule_list[group][str(datetime.datetime.today().weekday())])
+                text = "Horario de hoy para " + group + ":" + text
+                bot.send_message(chat_id=update.message.chat_id, text=text)
+            else:
+                bot.send_message(chat_id=update.message.chat_id, text="Hoy no hay horario")
+
+
+
         except:
             bot.send_message(chat_id=update.message.chat_id, text="No he podido procesar tu solicitud de horario.")
     else:
