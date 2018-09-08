@@ -166,7 +166,7 @@ def schedule_command(bot, update, args):  # Add arguments for checking other's g
             if update.message.chat_id < 0:  # ID's below 0 are groups.
                 group = update.message.chat.title.replace(" ETSISI", "")  # Borro contenido de los títulos que me sobra
                 if args:  # Ignore arguments if call is recieved from group.
-                    bot.send_message(chat_id=update.message.chat_id, text="No respondo peticiones de horario de otros grupos aquí para evitar SPAM. Inicia un chat privado conmigo y pregúntame de.")
+                    bot.send_message(chat_id=update.message.chat_id, text="No respondo peticiones de horario de otros grupos aquí para evitar SPAM. Inicia un chat privado conmigo y pregúntame.")
                     return
             else:
                 group = args[0]
