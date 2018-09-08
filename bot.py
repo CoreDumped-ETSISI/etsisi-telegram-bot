@@ -6,6 +6,7 @@ import json
 import telegram
 import datetime
 import time
+import traceback
 import os
 
 from telegram.ext.jobqueue import Days
@@ -88,6 +89,12 @@ def is_call_available(name, chat_id, cooldown):
         return True
 
 
+def reset_call(name, chat_id):
+    global last_function_calls
+    reset_date = datetime.datetime.now() - datetime.timedelta(days=1)
+    last_function_calls[name][chat_id] = reset_date
+
+
 def help_command(bot, update):
     if is_call_available("help_command", update.message.chat_id, 180):
         log_message(update)
@@ -159,28 +166,31 @@ def schedule_command(bot, update, args):  # Add arguments for checking other's g
             parsed_schedule.append("A las %sh -> %s" % (hour, schedule[hour]))
         return "\n".join(parsed_schedule)
 
-    if is_call_available("schedule", update.message.chat_id, 20):
+    if is_call_available("schedule", update.message.chat_id, 180):
         log_message(update)
+        weekdays = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
+        centinela = True
         try:
-            if update.message.chat_id < 0:  # ID's below 0 are groups.
-                group = update.message.chat.title.replace(" ETSISI", "")  # Borro contenido de los títulos que me sobra
-                if args:  # Ignore arguments if call is recieved from group.
-                    bot.send_message(chat_id=update.message.chat_id,
-                                     text="No respondo peticiones de horario de otros grupos aquí para evitar SPAM. Inicia un chat privado conmigo y pregúntame.")
-                    return
-            else:
+            group = ""
+            if args:
                 group = args[0].upper()
-            if (str(datetime.datetime.today().weekday()) in range(1, 5)):
+            if update.message.chat_id < 0:  # ID's below 0 are groups.
+                group = update.message.chat.title.replace(" ETSISI", "")  # get group from chat title
+
+            day_index = datetime.datetime.today().weekday()
+            if day_index in range(1, 5):
                 text = schedule_parser(schedule_list[group][str(datetime.datetime.today().weekday())])
-                text = "Horario de hoy para " + group + ":" + text
+                text = "Horario del " + weekdays[day_index] + " para " + group + ":" + text
                 bot.send_message(chat_id=update.message.chat_id, text=text)
             else:
-                bot.send_message(chat_id=update.message.chat_id, text="Hoy no hay horario")
-
-
+                bot.send_message(chat_id=update.message.chat_id,
+                                 text="Hoy " + weekdays[day_index] + " no hay horario")
 
         except:
-            bot.send_message(chat_id=update.message.chat_id, text="No he podido procesar tu solicitud de horario.")
+            tb = traceback.format_exc()
+            bot.send_message(chat_id=update.message.chat_id,
+                             text="No he podido procesar tu solicitud de horario.\n\nERROR:\n" + str(
+                                 tb) + "\n\nPor favor, reenvía este error a @nestoroa.")
     else:
         delete_message(bot, update)
 
