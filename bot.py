@@ -31,7 +31,8 @@ def error_callback(bot, update, error):
     except Unauthorized:
         logger.exception("remove update.message.chat_id from conversation list")
     except BadRequest:
-        logger.exception("handle malformed requests - read more below!")
+        if update.message.chat_id < 0:  # This pre-check is necessary if we do not want to spam the logs with "BadRequest: Message can't be deleted" as this bot has no power to remove user messages in private chats.
+            logger.exception("handle malformed requests - read more below!")
     except TimedOut:
         logger.exception("handle slow connection problems")
     except NetworkError:
@@ -170,7 +171,7 @@ def schedule_command(bot, update, args):  # Add arguments for checking other's g
             else:
                 group = args[0]
             text = "Horario de hoy para " + group + ":" + schedule_parser(
-                schedule_list[group][str(datetime.datetime.today().weekday()-2)]) + "\n\n Gracias a Yadkee por su ayuda"
+                schedule_list[group][str(datetime.datetime.today().weekday())]) + "\n\n Gracias a Yadkee por su ayuda"
             bot.send_message(chat_id=update.message.chat_id, text=text)
         except:
             bot.send_message(chat_id=update.message.chat_id, text="No he podido procesar tu solicitud de horario.")
