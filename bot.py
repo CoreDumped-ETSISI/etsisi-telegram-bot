@@ -42,6 +42,10 @@ def error_callback(bot, update, error):
     except TelegramError:
         logger.exception("There is some error with Telegram")
 
+def is_admin(user_id):
+    if user_id in settings.admin_ids:
+        return True
+    return False
 
 def get_schedule():
     with io.open('horarios.json', 'r', encoding='utf8') as data_file:
@@ -107,7 +111,7 @@ def human_texting(string):
 
 
 def reload_data(bot, update):
-    if update.message.from_user.id == 15360527:
+    if is_admin(update.message.from_user.id):
         logger.info("Reloading settings")
         load_settings()
         bot.send_message(chat_id=update.message.chat_id, text="Datos cargados")

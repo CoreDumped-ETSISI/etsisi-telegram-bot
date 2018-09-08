@@ -1,4 +1,5 @@
 {
     "telegram_token": "",
-    "admin_password": ""
+    "admin_password": "",
+    "admin_ids": []
 }
