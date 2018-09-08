@@ -169,7 +169,7 @@ def schedule_command(bot, update, args):  # Add arguments for checking other's g
                     bot.send_message(chat_id=update.message.chat_id, text="No respondo peticiones de horario de otros grupos aquí para evitar SPAM. Inicia un chat privado conmigo y pregúntame.")
                     return
             else:
-                group = args[0]
+                group = args[0].upper()
             text = "Horario de hoy para " + group + ":" + schedule_parser(
                 schedule_list[group][str(datetime.datetime.today().weekday())]) + "\n\n Gracias a Yadkee por su ayuda"
             bot.send_message(chat_id=update.message.chat_id, text=text)
