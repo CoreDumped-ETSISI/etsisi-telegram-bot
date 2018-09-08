@@ -115,6 +115,7 @@ def reload_data(bot, update):
         logger.info("Reloading settings")
         load_settings()
         bot.send_message(chat_id=update.message.chat_id, text="Datos cargados")
+    delete_message(bot, update)
 
 
 def news_command(bot, update):
