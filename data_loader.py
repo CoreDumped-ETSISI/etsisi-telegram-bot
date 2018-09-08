@@ -19,10 +19,10 @@ class DataLoader:
             logger.exception("Error al cargar el JSON de configuración")
         else:
             logger.info("JSON cargado con éxito")
-            self.telegram_token = data_and_settings["telegram token"]
+            self.telegram_token = data_and_settings["telegram_token"]
             self.help_string = data_and_settings["strings"]["help"]
             self.github_url = data_and_settings["strings"]["github_url"]
-            self.admin_password = data_and_settings["admin password"]
+            self.admin_password = data_and_settings["admin_password"]
             self.degrees = data_and_settings["degrees"]
             self.etsisi_urls = data_and_settings["etsisi_urls"]
             self.upm_jsons = data_and_settings["upm_jsons"]

@@ -31,7 +31,8 @@ def error_callback(bot, update, error):
     except Unauthorized:
         logger.exception("remove update.message.chat_id from conversation list")
     except BadRequest:
-        logger.exception("handle malformed requests - read more below!")
+        if update.message.chat_id < 0:  # This pre-check is necessary if we do not want to spam the logs with "BadRequest: Message can't be deleted" as this bot has no power to remove user messages in private chats.
+            logger.exception("handle malformed requests - read more below!")
     except TimedOut:
         logger.exception("handle slow connection problems")
     except NetworkError:
@@ -147,7 +148,7 @@ def notifications_command(bot, update):
         delete_message(bot, update)
 
 
-def schedule_command(bot, update):
+def schedule_command(bot, update, args):  # Add arguments for checking other's group schedule
     global chat_ids_list
     global schedule_list
 
@@ -162,7 +163,13 @@ def schedule_command(bot, update):
     if is_call_available("schedule", update.message.chat_id, 20):
         log_message(update)
         try:
-            group = update.message.chat.title.replace(" ETSISI", "")  # Borro contenido de los títulos que me sobra
+            if update.message.chat_id < 0:  # ID's below 0 are groups.
+                group = update.message.chat.title.replace(" ETSISI", "")  # Borro contenido de los títulos que me sobra
+                if args:  # Ignore arguments if call is recieved from group.
+                    bot.send_message(chat_id=update.message.chat_id, text="No respondo peticiones de horario de otros grupos aquí para evitar SPAM. Inicia un chat privado conmigo y pregúntame.")
+                    return
+            else:
+                group = args[0].upper()
             text = "Horario de hoy para " + group + ":" + schedule_parser(
                 schedule_list[group][str(datetime.datetime.today().weekday())]) + "\n\n Gracias a Yadkee por su ayuda"
             bot.send_message(chat_id=update.message.chat_id, text=text)
@@ -187,7 +194,7 @@ if __name__ == "__main__":
         dispatcher.add_handler(CommandHandler('noticias', news_command))
         dispatcher.add_handler(CommandHandler('eventos', events_command))
         dispatcher.add_handler(CommandHandler('avisos', notifications_command))
-        dispatcher.add_handler(CommandHandler('horario', schedule_command))
+        dispatcher.add_handler(CommandHandler('horario', schedule_command, pass_args=True))
         dispatcher.add_handler(MessageHandler(Filters.status_update, delete_message))
         dispatcher.add_error_handler(error_callback)
 
