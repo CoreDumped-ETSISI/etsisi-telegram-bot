@@ -1,6 +1,6 @@
 {
   "strings":{
-    "help": "Hola, soy el bot de utilidades para miembros de la ETSISI.\nTe puedo ayudar de muchas formas:\n\n·> /horario te mandará el horario de tu grupo. También puedes consultar horarios de otros días y grupos. <i>Ejemplo: /horario gt11 m</i>\n·> /noticias te devolverá las últimas noticias que aparezcan en la web de nuestra escuela\n·> /avisos te mandará los avisos importantes para alumnos\n·> /eventos Te mandará la lista de los próximos eventos de la escuela.\n\nMi código está en <a href=\"https://github.com/CoreDumped-ETSISI/etsisi-telegram-bot\">Github</a>. Todavía estoy en beta, ten paciencia conmigo :)",
+    "help": "Hola, soy el bot de utilidades para miembros de la ETSISI.\nTe puedo ayudar de muchas formas:\n\n·> /horario te mandará el horario de tu grupo. También puedes consultar horarios de otros días y grupos. <i>Ejemplo: /horario gt11 martes</i>\n·> /noticias te devolverá las últimas noticias que aparezcan en la web de nuestra escuela\n·> /avisos te mandará los avisos importantes para alumnos\n·> /eventos Te mandará la lista de los próximos eventos de la escuela.\n\nMi código está en <a href=\"https://github.com/CoreDumped-ETSISI/etsisi-telegram-bot\">Github</a>. Todavía estoy en beta, ten paciencia conmigo :)",
     "github_url":"https://github.com/CoreDumped-ETSISI/etsisi-telegram-bot"
   },
   "degrees": {
