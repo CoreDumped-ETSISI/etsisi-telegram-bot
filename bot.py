@@ -31,8 +31,8 @@ def error_callback(bot, update, error):
         raise error
     except Unauthorized:
         logger.exception("remove update.message.chat_id from conversation list")
-    except BadRequest:
-        if update.message.chat_id < 0:  # This pre-check is necessary if we do not want to spam the logs with "BadRequest: Message can't be deleted" as this bot has no power to remove user messages in private chats.
+    except BadRequest as e:
+        if update.message.chat_id < 0 and e == "Message can't be deleted":  # This pre-check is necessary if we do not want to spam the logs with "BadRequest: Message can't be deleted" as this bot has no power to remove user messages in private chats.
             logger.exception("handle malformed requests - read more below!")
     except TimedOut:
         logger.exception("handle slow connection problems")
