@@ -8,6 +8,7 @@ import datetime
 import time
 import traceback
 import os
+import re
 
 from telegram.ext.jobqueue import Days
 
@@ -24,7 +25,6 @@ from upm_json_consultor import get_etsisi_degrees_info_json
 
 reload(sys)
 sys.setdefaultencoding('utf8')
-
 
 def error_callback(bot, update, error):
     try:
@@ -43,6 +43,17 @@ def error_callback(bot, update, error):
     except TelegramError:
         logger.exception("There is some error with Telegram")
 
+weekdays = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
+
+codedays = {
+    "L": 0,
+    "M": 1,
+    "X": 2,
+    "J": 3,
+    "V": 4,
+    "S": 5,
+    "D": 6
+}
 
 def get_schedule():
     with io.open('horarios.json', 'r', encoding='utf8') as data_file:
@@ -168,23 +179,36 @@ def schedule_command(bot, update, args):  # Add arguments for checking other's g
 
     if is_call_available("schedule", update.message.chat_id, 180):
         log_message(update)
-        weekdays = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
         try:
             group = ""
+            day_index = datetime.datetime.today().weekday()
             if args:
-                group = args[0].upper()
+                args = map(str.upper, map(str,args))
+                if re.match(r"G[TM][1-4]{2}", args[0]):  # Either True or False
+                    group = args[0]
+                    print group
+                    if re.match(r"[LMXJV]", args[1]):  # Two inputs: group and daycode
+                            day_index = codedays[args[1]]
+                else:
+                    if not re.match(r"[LMXJV]", args[0]):  # Two inputs: group and daycode
+                        bot.send_message(chat_id=update.message.chat_id,
+                            text = "Día de la semana inválido. Debes introducir M, X, J, V")
+                        return
+                    day_index = codedays[args[0]]
+                    
             if update.message.chat_id < 0:  # ID's below 0 are groups.
                 group = update.message.chat.title.replace(" ETSISI", "")  # get group from chat title
 
-            day_index = datetime.datetime.today().weekday()
             if day_index in range(1, 5):
-                text = schedule_parser(schedule_list[group][str(datetime.datetime.today().weekday())])
+                text = schedule_parser(schedule_list[group][str(day_index)])
                 text = "Horario del " + weekdays[day_index] + " para " + group + ":" + text
                 bot.send_message(chat_id=update.message.chat_id, text=text)
-            else:
+            elif day_index == datetime.datetime.today().weekday():  # Check if user input is from 'today'
                 bot.send_message(chat_id=update.message.chat_id,
                                  text="Hoy " + weekdays[day_index] + " no hay horario")
-
+            else:
+                bot.send_message(chat_id=update.message.chat_id,
+                                 text="El " + weekdays[day_index] + " no hay horario")
         except:
             tb = traceback.format_exc()
             bot.send_message(chat_id=update.message.chat_id,
