@@ -196,7 +196,7 @@ def schedule_command(bot, update, args):  # Add arguments for checking other's g
             parsed_schedule.append("A las %sh -> %s" % (hour, schedule[hour]))
         return "\n".join(parsed_schedule)
 
-    if is_call_available("schedule", update.message.chat_id, 180):
+    if is_call_available(update.message.text, update.message.chat_id, 180):
         log_message(update)
         try:
             group = ""
