@@ -26,6 +26,7 @@ from upm_json_consultor import get_etsisi_degrees_info_json
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+
 def error_callback(bot, update, error):
     try:
         raise error
@@ -43,12 +44,14 @@ def error_callback(bot, update, error):
     except TelegramError:
         logger.exception("There is some error with Telegram")
 
+
 def is_admin(user_id):
     if user_id in settings.admin_ids:
         return True
     return False
 
-  weekdays = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
+
+weekdays = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
 
 codedays = {
     "L": 0,
@@ -67,6 +70,8 @@ codedays = {
     "SÁBADO": 5,
     "SABADO": 6,
     "DOMINGO": 7,
+}
+
 
 def get_schedule():
     with io.open('horarios.json', 'r', encoding='utf8') as data_file:
@@ -141,7 +146,7 @@ def reload_data(bot, update):
     if is_admin(update.message.from_user.id):
         logger.info("Reloading settings")
         load_settings()
-        bot.send_message(chat_id=update.message.chat_id, text="Datos cargados")
+        bot.send_message(chat_id=update.message.chat_id, text="Datos recargados")
     delete_message(bot, update)
 
 
@@ -200,23 +205,24 @@ def schedule_command(bot, update, args):  # Add arguments for checking other's g
                 args = [str(x.upper()) for x in args]
                 if re.match(r"G[TM][1-4]{2}", args[0]):  # Either True or False
                     group = args[0]
-                    print args
                     if len(args) > 1:  # If a second paramenter exists
-                        if re.match(r"[LMXJV]", args[1]) or args[1].decode('utf-8') in codedays.keys():  # Two inputs: group and daycode
-                                print args[1].decode('utf-8')
-                                day_index = codedays[str(args[1].decode('utf-8'))]
+                        if re.match(r"[LMXJV]", args[1]) or args[1].decode(
+                                'utf-8') in codedays.keys():  # Two inputs: group and daycode
+                            day_index = codedays[str(args[1].decode('utf-8'))]
                 else:
-                    if not re.match(r"[LMXJV]", args[0]) or not args[0].decode('utf-8') in codedays.keys():  # Two inputs: group and daycode
-                            if update.message.chat_id < 0:
-                                bot.send_message(chat_id=update.message.chat_id,
-                                    text = "Día de la semana inválido. Debes introducir martes/M, miércoles/X, jueves/J, viernes/V")
-                                return
-                            else:
-                                bot.send_message(chat_id=update.message.chat_id,
-                                    text = "Debes especificar un grupo. <i>Por ejemplo: /horario gt11</i>", parse_mode=telegram.ParseMode.HTML)
-                                return
+                    if not re.match(r"[LMXJV]", args[0]) or not args[0].decode(
+                            'utf-8') in codedays.keys():  # Two inputs: group and daycode
+                        if update.message.chat_id < 0:
+                            bot.send_message(chat_id=update.message.chat_id,
+                                             text="Día de la semana inválido. Debes introducir martes/M, miércoles/X, jueves/J, viernes/V")
+                            return
+                        else:
+                            bot.send_message(chat_id=update.message.chat_id,
+                                             text="Debes especificar un grupo. <i>Por ejemplo: /horario gt11</i>",
+                                             parse_mode=telegram.ParseMode.HTML)
+                            return
                     day_index = codedays[str(args[0].decode('utf-8'))]
-                    
+
             if update.message.chat_id < 0:  # ID's below 0 are groups.
                 group = update.message.chat.title.replace(" ETSISI", "")  # get group from chat title
 
@@ -258,7 +264,9 @@ if __name__ == "__main__":
         dispatcher.add_handler(CommandHandler('eventos', events_command))
         dispatcher.add_handler(CommandHandler('avisos', notifications_command))
         dispatcher.add_handler(CommandHandler('horario', schedule_command, pass_args=True))
-        dispatcher.add_handler(MessageHandler(Filters.status_update, delete_message))
+        dispatcher.add_handler(MessageHandler(Filters.status_update.new_chat_members, delete_message))
+        dispatcher.add_handler(MessageHandler(Filters.status_update.new_chat_title, delete_message))
+        dispatcher.add_handler(MessageHandler(Filters.status_update.left_chat_member, delete_message))
         dispatcher.add_error_handler(error_callback)
 
     except Exception as ex:
