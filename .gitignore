@@ -1,4 +1,6 @@
 __pycache__/
+.vscode/
+
 *.pyc
 *.log
 private-data.json
