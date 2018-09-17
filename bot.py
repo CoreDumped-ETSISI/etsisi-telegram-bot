@@ -266,8 +266,8 @@ def teacher_command(bot, update, args):  # Add arguments for checking other's gr
 
     def teacher_parser(teacher):
         parsed_teachers = [""]
-        #schedule_keys = sorted(schedule, key=lambda s: int(s.split(":")[0]))
-        for k, v in zip(teacher.keys(),teacher.values()):
+        # schedule_keys = sorted(schedule, key=lambda s: int(s.split(":")[0]))
+        for k, v in zip(teacher.keys(), teacher.values()):
             parsed_teachers.append("<b>%s</b> -> %s" % (k, v))
         return "\n".join(parsed_teachers)
 
@@ -280,9 +280,11 @@ def teacher_command(bot, update, args):  # Add arguments for checking other's gr
             if update.message.chat_id < 0:  # ID's below 0 are groups.
                 group = update.message.chat.title.replace(" ETSISI", "")  # get group from chat title
 
-            
-            text = teacher_parser(teacher_list[group])
-            text = "Lista de profesores para el primer semestre de " + group + ":\n" + text
+            if group is not "":
+                text = teacher_parser(teacher_list[group])
+                text = "Lista de profesores para el primer semestre de " + group + ":\n" + text
+            else:
+                text = "No me has dicho a qué grupo te refieres."
             bot.send_message(chat_id=update.message.chat_id, text=text, parse_mode=telegram.ParseMode.HTML)
 
         except:
