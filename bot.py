@@ -153,7 +153,6 @@ def reload_data(bot, update):
     if is_admin(update.message.from_user.id):
         logger.info("Reloading settings")
         load_settings()
-        bot.send_message(chat_id=update.message.chat_id, text="Datos recargados")
     delete_message(bot, update)
 
 
@@ -209,7 +208,7 @@ def schedule_command(bot, update, args):  # Add arguments for checking other's g
             parsed_schedule.append("A las %sh -> %s" % (hour, schedule[hour]))
         return "\n".join(parsed_schedule)
 
-    if is_call_available(update.message.text, update.message.chat_id, 180):
+    if is_call_available(update.message.text, update.message.chat_id, 60):
         log_message(update)
         try:
             group = ""
