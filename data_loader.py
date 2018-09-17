@@ -23,6 +23,7 @@ class DataLoader:
             self.help_string = data_and_settings["strings"]["help"]
             self.github_url = data_and_settings["strings"]["github_url"]
             self.admin_password = data_and_settings["admin_password"]
+            self.calendar_string = data_and_settings["strings"]["calendar"]
             self.admin_ids = data_and_settings["admin_ids"]
             self.degrees = data_and_settings["degrees"]
             self.etsisi_urls = data_and_settings["etsisi_urls"]

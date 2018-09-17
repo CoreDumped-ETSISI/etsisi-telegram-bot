@@ -78,6 +78,11 @@ def get_schedule():
         return json.load(data_file)
 
 
+def get_teachers():
+    with io.open('profesores.json', 'r', encoding='utf8') as data_file:
+        return json.load(data_file)
+
+
 def get_chat_ids():
     with io.open('chat_ids.json', 'r', encoding='utf8') as data_file:
         return json.load(data_file)
@@ -87,9 +92,11 @@ def load_settings():
     global settings
     global last_function_calls
     global schedule_list
+    global teacher_list
     global chat_ids_list
     settings = DataLoader()
     schedule_list = get_schedule()
+    teacher_list = get_teachers()
     chat_ids_list = get_chat_ids()
     last_function_calls = {}
 
@@ -185,6 +192,12 @@ def notifications_command(bot, update):
         delete_message(bot, update)
 
 
+def calendar_command(bot, update):
+    if is_call_available("calendario", update.message.chat_id, 180):
+        log_message(update)
+        bot.sendMessage(update.message.chat_id, settings.calendar_string, parse_mode=telegram.ParseMode.HTML)
+
+
 def schedule_command(bot, update, args):  # Add arguments for checking other's group schedule
     global chat_ids_list
     global schedule_list
@@ -248,6 +261,40 @@ def schedule_command(bot, update, args):  # Add arguments for checking other's g
         delete_message(bot, update)
 
 
+def teacher_command(bot, update, args):  # Add arguments for checking other's group schedule
+    global chat_ids_list
+    global teacher_list
+
+    def teacher_parser(teacher):
+        parsed_teachers = [""]
+        #schedule_keys = sorted(schedule, key=lambda s: int(s.split(":")[0]))
+        for k, v in zip(teacher.keys(),teacher.values()):
+            parsed_teachers.append("<b>%s</b> -> %s" % (k, v))
+        return "\n".join(parsed_teachers)
+
+    if is_call_available("teacher", update.message.chat_id, 180):
+        log_message(update)
+        try:
+            group = ""
+            if args:
+                group = args[0].upper()
+            if update.message.chat_id < 0:  # ID's below 0 are groups.
+                group = update.message.chat.title.replace(" ETSISI", "")  # get group from chat title
+
+            
+            text = teacher_parser(teacher_list[group])
+            text = "Lista de profesores para el primer semestre de " + group + ":\n" + text
+            bot.send_message(chat_id=update.message.chat_id, text=text, parse_mode=telegram.ParseMode.HTML)
+
+        except:
+            tb = traceback.format_exc()
+            bot.send_message(chat_id=update.message.chat_id,
+                             text="No he podido procesar tu solicitud de profesores.\n\nERROR:\n" + str(
+                                 tb) + "\n\nPor favor, reenvía este error a @nestoroa.")
+    else:
+        delete_message(bot, update)
+
+
 if __name__ == "__main__":
     print("ETSISI Bot: Starting...")
 
@@ -263,7 +310,9 @@ if __name__ == "__main__":
         dispatcher.add_handler(CommandHandler('noticias', news_command))
         dispatcher.add_handler(CommandHandler('eventos', events_command))
         dispatcher.add_handler(CommandHandler('avisos', notifications_command))
+        dispatcher.add_handler(CommandHandler('calendario', calendar_command))
         dispatcher.add_handler(CommandHandler('horario', schedule_command, pass_args=True))
+        dispatcher.add_handler(CommandHandler('profesores', teacher_command, pass_args=True))
         dispatcher.add_handler(MessageHandler(Filters.status_update.new_chat_members, delete_message))
         dispatcher.add_handler(MessageHandler(Filters.status_update.new_chat_title, delete_message))
         dispatcher.add_handler(MessageHandler(Filters.status_update.left_chat_member, delete_message))
