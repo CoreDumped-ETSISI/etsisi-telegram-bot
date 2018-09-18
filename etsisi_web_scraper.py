@@ -12,7 +12,7 @@ def degree_json_scraper():
         print("Getting guides for " + str(degree_code))
         requested_url = data['urls'][degree_code]
         html = requests.get(requested_url)
-        soup = BeautifulSoup(html, 'html.parser')
+        soup = BeautifulSoup(html.text, 'html.parser')
         asignaturas_dict = {
         }
         for idx, row in enumerate(soup.find_all('tr')):

@@ -215,7 +215,7 @@ def schedule_command(bot, update, args):  # Add arguments for checking other's g
             day_index = datetime.datetime.today().weekday()
             if args:
                 args = [str(x.upper()) for x in args]
-                if re.match(r"G[TM][1-4]{2}", args[0]):  # Either True or False
+                if re.match(r"G[TM][1-4]{2}", args[0]):  # First argument is a group identificator
                     group = args[0]
                     if len(args) > 1:  # If a second paramenter exists
                         if re.match(r"[LMXJV]", args[1]) or args[1].decode(
@@ -238,24 +238,24 @@ def schedule_command(bot, update, args):  # Add arguments for checking other's g
             if update.message.chat_id < 0:  # ID's below 0 are groups.
                 group = update.message.chat.title.replace(" ETSISI", "")  # get group from chat title
 
-            if day_index in range(1, 5):
+            if group == u"GX3" or group == u"GX4":
+                bot.send_message(chat_id=update.message.chat_id,
+                                 text="Esta función no está definida para este grupo.")
+            elif day_index in range(1, 5):
                 text = schedule_parser(schedule_list[group][str(day_index)])
                 text = "Horario del " + weekdays[day_index] + " para " + group + ":" + text
                 bot.send_message(chat_id=update.message.chat_id, text=text)
             elif day_index == datetime.datetime.today().weekday():  # Check if user input is from 'today'
                 bot.send_message(chat_id=update.message.chat_id,
                                  text="Hoy " + weekdays[day_index] + " no hay clases.")
-                return
             else:
                 bot.send_message(chat_id=update.message.chat_id,
                                  text="El " + weekdays[day_index] + " no hay clases.")
-                return
         except:
             tb = traceback.format_exc()
             bot.send_message(chat_id=update.message.chat_id,
                              text="No he podido procesar tu solicitud de horario.\n\nERROR:\n" + str(
                                  tb) + "\n\nPor favor, reenvía este error a @nestoroa.")
-            return
     else:
         delete_message(bot, update)
 
