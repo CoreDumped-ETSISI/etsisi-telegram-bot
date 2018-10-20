@@ -9,6 +9,7 @@ import time
 import traceback
 import os
 import re
+import requests
 
 from telegram.ext.jobqueue import Days
 
@@ -196,6 +197,30 @@ def calendar_command(bot, update):
         log_message(update)
         bot.sendMessage(update.message.chat_id, settings.calendar_string, parse_mode=telegram.ParseMode.HTML)
 
+def cafeteria_command(bot, update):
+    if is_call_available("cafe", update.message.chat_id, 180):
+        text = ""
+        log_message(update)
+
+        try:
+            data = requests.get("https://cafe.kolhos.chichasov.es/today").json()
+
+            if "message" in data: # Error, maybe it isn't open today?
+                text = "Ups, algo ha salido mal:\n" + data["message"]
+            else:
+                text = (
+                    "Hoy de primer plato hay:\n" +
+                    '\n'.join(['- ' + p for p in data["primer"]]) +
+                    "\n\nSegundo plato:\n" +
+                    '\n'.join(['- ' + p for p in data["segundo"]])
+                    )
+        except:
+            text = (
+                "El servidor no está disponible ahora, vuelve a intentarlo más tarde.\n\nEl menú semanal se puede ver manualmente aquí:\n" +
+                "https://www.etsisi.upm.es/escuela/servicios/cafeteria"
+            )
+
+        bot.sendMessage(update.message.chat_id, text=text)
 
 def schedule_command(bot, update, args):  # Add arguments for checking other's group schedule
     global chat_ids_list
@@ -312,6 +337,7 @@ if __name__ == "__main__":
         dispatcher.add_handler(CommandHandler('eventos', events_command))
         dispatcher.add_handler(CommandHandler('avisos', notifications_command))
         dispatcher.add_handler(CommandHandler('calendario', calendar_command))
+        dispatcher.add_handler(CommandHandler('cafe', cafeteria_command))
         dispatcher.add_handler(CommandHandler('horario', schedule_command, pass_args=True))
         dispatcher.add_handler(CommandHandler('profesores', teacher_command, pass_args=True))
         dispatcher.add_handler(MessageHandler(Filters.status_update.new_chat_members, delete_message))
