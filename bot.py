@@ -2,18 +2,14 @@
 # -*- coding: utf-8 -*-
 import io
 import json
-from imp import reload
 
 import telegram
 import datetime
 import time
 import traceback
-import os
 import re
 import requests
 
-from telegram.ext.jobqueue import Days
-from urllib3.util import url
 
 import logger
 from logger import get_logger
@@ -24,7 +20,6 @@ from random import normalvariate
 from telegram.error import (TelegramError, Unauthorized, BadRequest,
                             TimedOut, ChatMigrated, NetworkError)
 from etsisi_web_scraper import news_json_scraper, events_json_scraper, avisos_json_scraper
-from upm_json_consultor import get_etsisi_degrees_info_json
 from selenium import webdriver
 
 reload(sys)
