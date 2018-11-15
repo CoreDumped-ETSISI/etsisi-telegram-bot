@@ -1,7 +1,10 @@
 __pycache__/
 .vscode/
+.idea/
+env/
 
 *.pyc
 *.log
-private-data.json
-chat_ids.json
+
+data/private-data.json
+data/chat_ids.json

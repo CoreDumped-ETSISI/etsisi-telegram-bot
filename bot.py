@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import io
 import json
+from imp import reload
 
 import telegram
 import datetime
@@ -12,6 +13,7 @@ import re
 import requests
 
 from telegram.ext.jobqueue import Days
+from urllib3.util import url
 
 import logger
 from logger import get_logger
@@ -23,6 +25,7 @@ from telegram.error import (TelegramError, Unauthorized, BadRequest,
                             TimedOut, ChatMigrated, NetworkError)
 from etsisi_web_scraper import news_json_scraper, events_json_scraper, avisos_json_scraper
 from upm_json_consultor import get_etsisi_degrees_info_json
+from selenium import webdriver
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -75,17 +78,17 @@ codedays = {
 
 
 def get_schedule():
-    with io.open('horarios.json', 'r', encoding='utf8') as data_file:
+    with io.open('data/horarios.json', 'r', encoding='utf8') as data_file:
         return json.load(data_file)
 
 
 def get_teachers():
-    with io.open('profesores.json', 'r', encoding='utf8') as data_file:
+    with io.open('data/profesores.json', 'r', encoding='utf8') as data_file:
         return json.load(data_file)
 
 
 def get_chat_ids():
-    with io.open('chat_ids.json', 'r', encoding='utf8') as data_file:
+    with io.open('data/chat_ids.json', 'r', encoding='utf8') as data_file:
         return json.load(data_file)
 
 
@@ -232,6 +235,23 @@ def menu_command(bot, update):
         bot.sendMessage(update.message.chat_id, text=text)
 
 
+def busy_rooms_command(bot, update):
+    if is_call_available("busy_rooms", update.message.chat_id, 180):
+        log_message(update)
+        logger.info("Getting busy rooms")
+        options = webdriver.ChromeOptions()
+        options.add_argument('--headless')
+        options.add_argument('--window-size=1033,558')
+        driver = webdriver.Chrome(executable_path='resources/chromedriver_linux', chrome_options=options)
+        driver.get(settings.url_busy_rooms)
+        driver.get_screenshot_as_file('resources/ocupacion_salas_biblioteca.png')
+        driver.close()
+        text = 'La ocupación de las salas de trabajo en grupo de la Biblioteca Universitaria Campus Sur es la ' \
+               'siguiente: '
+        bot.sendMessage(chat_id=update.message.chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
+        bot.send_photo(chat_id=update.message.chat_id, photo=open('resources/ocupacion_salas_biblioteca.png', 'rb'))
+
+
 def schedule_command(bot, update, args):  # Add arguments for checking other's group schedule
     global chat_ids_list
     global schedule_list
@@ -350,6 +370,7 @@ if __name__ == "__main__":
         dispatcher.add_handler(CommandHandler('menu', menu_command))
         dispatcher.add_handler(CommandHandler('horario', schedule_command, pass_args=True))
         dispatcher.add_handler(CommandHandler('profesores', teacher_command, pass_args=True))
+        dispatcher.add_handler(CommandHandler('salasbiblioteca', busy_rooms_command))
         dispatcher.add_handler(MessageHandler(Filters.status_update.new_chat_members, delete_message))
         dispatcher.add_handler(MessageHandler(Filters.status_update.new_chat_title, delete_message))
         dispatcher.add_handler(MessageHandler(Filters.status_update.left_chat_member, delete_message))
