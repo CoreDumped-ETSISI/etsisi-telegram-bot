@@ -1,0 +1,109 @@
+{
+  "GM11": {
+    "AM" : "Alfonsa García López / Francisco García Mazarío",
+    "MD" : "Mª Teresa Foulquié Usán",
+    "FC" : "Adolfo Yela Ruiz",
+    "P" : "Belén Salazar Dutrús",
+    "TSO" : "José Ernesto Jiménez Merino / Andrés Sevilla de Pablo",
+    "TP" : "Belén Salazar Dutrús / Carmen Gil Abad"
+  },
+  "GM12": {
+    "AM" : "Gregoria Blanco Viejo / Alfonsa García López",
+    "MD" : "Mª Teresa Foulquié Usán / Aránzazu Corral Herrero",
+    "FC" : "Juan José Cuervas Mons-Elvira",
+    "P" : "Francisco Javier Sáenz Marcilla",
+    "TSO" : "Rosa Mª Pinero Fernández / Andrés Sevilla de Pablo",
+    "TP" : "Francisco Javier Sáenz Marcilla / Ángel Arroyo Castillo"
+  },
+  "GM13": {
+    "AM" : "Luis Miguel Pozo Coronado / Alfonsa García López",
+    "MD" : "Ángeles Martínez Sánchez",
+    "FC" : "Adolfo Yela Ruiz",
+    "P" : "Carmen Gil Abad ",
+    "TSO" : "José Ernesto Jiménez Merino / Andrés Sevilla de Pablo",
+    "TP" : "Carmen Gil Abad / Belén Salazar Dutrús"
+  },
+  "GM14": {
+    "AM" : "Alfonsa García López / Félix Rincón Rojas",
+    "MD" : "Ángeles Martínez Sánchez ",
+    "FC" : "José Gutiérrez Fernández",
+    "P" : "Carmen Gil Abad",
+    "TSO" : "Norberto Cañas de Paz / Andrés Sevilla de Pablo",
+    "TP" : "Carmen Gil Abad / Pilar Martínez García"
+  },
+  "GM15": {
+    "AM" : "Rafael Miñano Rubio / Félix Rincón de Rojas",
+    "MD" : "Jesús García López de Lacalle",
+    "FC" : "Juan Luis Martín Garcés",
+    "P" : "Ana Palomar Martín",
+    "TSO" : "Rosa María Pinero Fernández / Andrés Sevilla de Pablo",
+    "TP" : "Ana Palomar Martín / Francisco Javier Sáenz Marcilla"
+  },
+  "GT11": {
+	"AM" : "Francisco García Mazarío / Alfonsa García López",
+    "MD" : "José Ignacio Gómez Leal",
+    "FC" : "Bernardo Tabuenca Archilla",
+    "P" : "Belén Salazar Dutrús",
+    "TSO" : "Pedro Pablo López Rodríguez / Norberto Cañas de Paz",
+    "TP" : "Belén Salazar Dutrús / Pilar Martínez García"
+  },
+  "GT12": {
+    "AM" : "Francisco García Mazarío / Félix Rincón de Rojas",
+    "MD" : "José Juan Carreño Carreño / José Ignacio Gómez Leal",
+    "FC" : "Adolfo Yela Ruiz",
+    "P" : "Francisco Javier Sáenz Marcilla ",
+    "TSO" : "Pedro Pablo López Rodríguez / Andrés Sevilla de Pablo",
+    "TP" : "Francisco Javier Sáenz Marcilla / Ángel Arroyo Castillo"
+  },
+  "GT13": {
+    "AM" : "Rafael Miñano Rubio / Félix Rincón de Rojas",
+    "MD" : "José Juan Carreño Carreño",
+    "FC" : "Vicente García Alcántara",
+    "P" : "José Ramón Sánchez Couso",
+    "TSO" : "Pedro Pablo López Rodríguez / Andrés Sevilla de Pablo",
+    "TP" : "José Ramón Sánchez Couso / Fernando Arroyo Montoro"
+  },
+  "GT14": {
+    "AM" : "----",
+    "MD" : "----",
+    "FC" : "José Gutiérrez Fernández",
+    "P" : "José Ramón Sánchez Couso ",
+    "TSO" : "Pedro Pablo López Rodríguez / Andrés Sevilla de Pablo",
+    "TP" : "José Ramón Sánchez Couso / Fernando Arroyo Montoro"
+  },
+  "GM21": {
+    "AL" : "Antonio Hernando Esteban (teoría y practicas) / Miguel Ángel Díaz Martín (prácticas)",
+    "AC" : "Mª Teresa Foulquié Usán",
+    "BD" : "Concepción Martín Gascueña (T y P) / Edgar Talavera Muñoz (P)",
+    "IA" : "Javier de Lope Asiaín",
+    "POO" : "Abraham Gutiérrez Rodríguez"
+  },
+  "GM22": {
+    "AL" : "Antonio Hernando Esteban (teoría y practicas) / Miguel Ángel Díaz Martín (prácticas)",
+    "AC" : "Francisco Aylagas Romero",
+    "BD" : "Fernando Ortega Requena (T y P) / Concepción Martín Gascueña (P)",
+    "IA" : "J. Eugenio Naranjo Hernández",
+    "POO" : "Abraham Gutiérrez Rodríguez"
+  },
+  "GM23": {
+    "AL" : "Miguel Ángel Díaz Martín (teoría y practicas) / Antonio Hernando Esteban (prácticas)",
+    "AC" : "Francisco Aylagas Romero",
+    "BD" : "Concepción Martín Gascueña (T y P) / Edgar Talavera Muñoz (P)",
+    "IA" : "J. Eugenio Naranjo Hernández",
+    "POO" : "Jesús Bobadilla Sancho"
+  },
+  "GT21": {
+    "AL" : "Soledad Delgado Sanz (teoría y practicas) / Antonio Hernando Esteban (prácticas)",
+    "AC" : "Elvira Martínez de Icaya Gómez",
+    "BD" : "Francisco Javier Moldes Teo (T) / Eva Gil García (P) / Edgar Talavera Muñoz (P)",
+    "IA" : "Javier de Lope Asiaín",
+    "POO" : "Nuria Gómez Blas"
+  },
+  "GT22": {
+   "AL" : "Antonio Hernando Esteban (teoría y practicas) / Soledad Delgado Sanz (prácticas)",
+    "AC" : "José Luis Esteban de la Hermosa",
+    "BD" : "Francisco Javier Moldes Teo (T) / Eva Gil García (P)",
+    "IA" : "J. Eugenio Naranjo Hernández",
+    "POO" : "Jesús Bobadilla Sancho"
+  }
+}

@@ -11,8 +11,8 @@ class DataLoader:
     def __init__(self):
         global data_and_settings
         try:
-            private_data = json.load(open('private-data.json'), encoding="utf-8")
-            data = json.load(open('data.json'), encoding="utf-8")
+            private_data = json.load(open('data/private-data.json'), encoding="utf-8")
+            data = json.load(open('data/data.json'), encoding="utf-8")
             data_and_settings = private_data.copy()
             data_and_settings.update(data)
         except:
@@ -22,6 +22,7 @@ class DataLoader:
             self.telegram_token = data_and_settings["telegram_token"]
             self.help_string = data_and_settings["strings"]["help"]
             self.github_url = data_and_settings["strings"]["github_url"]
+            self.url_busy_rooms = data_and_settings["strings"]["url_busy_rooms"]
             self.admin_password = data_and_settings["admin_password"]
             self.calendar_string = data_and_settings["strings"]["calendar"]
             self.admin_ids = data_and_settings["admin_ids"]
