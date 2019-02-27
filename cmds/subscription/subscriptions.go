@@ -19,7 +19,7 @@ func SubscribeCmd(redis *redis.Client) func(commander.Context) error {
 
 		chatid := update.Message.Chat.ID
 		if channel, ok := normalMap[feed]; ok {
-			_, err := redis.SAdd(channel+"_SUSCRIBERS", chatid).Result()
+			_, err := redis.SAdd(channel+"_SUBSCRIBERS", chatid).Result()
 
 			if err != nil {
 				msg := tb.NewMessage(chatid, "No se ha podido suscribirse :(")
@@ -32,7 +32,7 @@ func SubscribeCmd(redis *redis.Client) func(commander.Context) error {
 			bot.Send(msg)
 		} else if feed == "" {
 			for _, key := range publicChannels {
-				_, err := redis.SAdd(normalMap[key]+"_SUSCRIBERS", chatid).Result()
+				_, err := redis.SAdd(normalMap[key]+"_SUBSCRIBERS", chatid).Result()
 
 				if err != nil {
 					msg := tb.NewMessage(chatid, "No se ha podido suscribirse :(")
@@ -61,7 +61,7 @@ func UnsubscribeCmd(redis *redis.Client) func(commander.Context) error {
 
 		chatid := update.Message.Chat.ID
 		if channel, ok := normalMap[feed]; ok {
-			_, err := redis.SRem(channel+"_SUSCRIBERS", chatid).Result()
+			_, err := redis.SRem(channel+"_SUBSCRIBERS", chatid).Result()
 
 			if err != nil {
 				msg := tb.NewMessage(chatid, "No se ha podido desuscribirse :(")
@@ -74,7 +74,7 @@ func UnsubscribeCmd(redis *redis.Client) func(commander.Context) error {
 			bot.Send(msg)
 		} else if feed == "" {
 			for key := range normalMap {
-				_, err := redis.SRem(normalMap[key]+"_SUSCRIBERS", chatid).Result()
+				_, err := redis.SRem(normalMap[key]+"_SUBSCRIBERS", chatid).Result()
 
 				if err != nil {
 					msg := tb.NewMessage(chatid, "No se ha podido desuscribirse :(")
@@ -118,7 +118,7 @@ func StartMonitoringSubscriptions(redis *redis.Client, bot *tb.BotAPI) {
 					"payload": msg.Payload,
 				}).Info("Received event on channel")
 
-			members, err := redis.SMembers(msg.Channel + "_SUSCRIBERS").Result()
+			members, err := redis.SMembers(msg.Channel + "_SUBSCRIBERS").Result()
 
 			if err != nil {
 				log.
