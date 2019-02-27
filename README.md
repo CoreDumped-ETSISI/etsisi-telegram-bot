@@ -13,3 +13,5 @@ El bot llama a microservicios alojadoes en la repo https://github.com/CoreDumped
 # Colaboradores
 * Néstor J. Oubiña Arriaga
 * Ángel Senra
+
+Se pueden ver todos los contribuidores [aquí](https://github.com/CoreDumped-ETSISI/etsisi-telegram-bot/graphs/contributors)
