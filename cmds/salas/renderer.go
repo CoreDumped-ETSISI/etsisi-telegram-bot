@@ -91,6 +91,36 @@ func generateImage(salas *salasResponse, disabled int, stream *io.PipeWriter) {
 		c.RotateAbout(gg.Radians(45), float64(j)*hourw+2+margin, 45)
 	}
 
+	c.SetFontFace(face)
+
+	// Draw legend
+	legspacing := 87.0
+	legw := 50.0
+
+	c.SetRGB(19.0/255.0, 142.0/255.0, 0)
+	c.DrawRectangle(margin, margin+float64(h)+10, legw, 30)
+	c.Fill()
+	c.SetRGB(0, 0, 0)
+	c.DrawString("Libre", margin+legw+5, margin+float64(h)+margin-17)
+
+	c.SetRGB(142.0/255.0, 0, 0)
+	c.DrawRectangle(margin+legspacing*2, margin+float64(h)+10, legw, 30)
+	c.Fill()
+	c.SetRGB(0, 0, 0)
+	c.DrawString("Reservado", margin+legspacing*2+legw+5, margin+float64(h)+margin-17)
+
+	c.SetRGB(68.0/255.0, 19.0/255.0, 19.0/255.0)
+	c.DrawRectangle(margin+legspacing*4, margin+float64(h)+10, legw, 30)
+	c.Fill()
+	c.SetRGB(0, 0, 0)
+	c.DrawString("Ocupado", margin+legspacing*4+legw+5, margin+float64(h)+margin-17)
+
+	c.SetRGB(15.0/255.0, 53.0/255.0, 18.0/255.0)
+	c.DrawRectangle(margin+legspacing*6, margin+float64(h)+10, legw, 30)
+	c.Fill()
+	c.SetRGB(0, 0, 0)
+	c.DrawString("Pasado", margin+legspacing*6+legw+5, margin+float64(h)+margin-17)
+
 	c.EncodePNG(stream)
 	stream.Close()
 }
