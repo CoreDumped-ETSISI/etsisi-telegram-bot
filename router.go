@@ -18,6 +18,7 @@ func route(cmd *commander.CommandGroup, cfg config) {
 	cmd.Command("/salas", salas.SalasCmd)
 	cmd.Command("/noticias", news.NewsCmd)
 	cmd.Command("/avisos", news.AvisosCmd)
+	cmd.Command("/coredumped", news.CoreCmd)
 
 	cmd.Command("/help", help.HelpCmd)
 	cmd.Command("/start", help.HelpCmd)

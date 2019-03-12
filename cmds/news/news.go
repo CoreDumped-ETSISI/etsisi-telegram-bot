@@ -43,3 +43,7 @@ func NewsCmd(ctx commander.Context) error {
 func AvisosCmd(ctx commander.Context) error {
 	return handleCmd(ctx, "avisos")
 }
+
+func CoreCmd(ctx commander.Context) error {
+	return handleCmd(ctx, "coredumped")
+}
