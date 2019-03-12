@@ -9,6 +9,36 @@
 			"revisionTime": "2019-02-20T22:12:49Z"
 		},
 		{
+			"checksumSHA1": "tQNt4NQpd1u0h63gz0VfkWOR+pM=",
+			"path": "github.com/globalsign/mgo",
+			"revision": "eeefdecb41b842af6dc652aaea4026e8403e62df",
+			"revisionTime": "2018-10-15T13:59:52Z"
+		},
+		{
+			"checksumSHA1": "8M0m1bBTXUgVY4KcO7M+HOyf0+E=",
+			"path": "github.com/globalsign/mgo/bson",
+			"revision": "eeefdecb41b842af6dc652aaea4026e8403e62df",
+			"revisionTime": "2018-10-15T13:59:52Z"
+		},
+		{
+			"checksumSHA1": "1iY8pZI4hTyFuQtdp5AWghFqs50=",
+			"path": "github.com/globalsign/mgo/internal/json",
+			"revision": "eeefdecb41b842af6dc652aaea4026e8403e62df",
+			"revisionTime": "2018-10-15T13:59:52Z"
+		},
+		{
+			"checksumSHA1": "v3KpN1YL1/+YU9QgqgDl4kvvBco=",
+			"path": "github.com/globalsign/mgo/internal/sasl",
+			"revision": "eeefdecb41b842af6dc652aaea4026e8403e62df",
+			"revisionTime": "2018-10-15T13:59:52Z"
+		},
+		{
+			"checksumSHA1": "AKJfdKarCr3wFfBFAc1DozFQqbA=",
+			"path": "github.com/globalsign/mgo/internal/scram",
+			"revision": "eeefdecb41b842af6dc652aaea4026e8403e62df",
+			"revisionTime": "2018-10-15T13:59:52Z"
+		},
+		{
 			"checksumSHA1": "6EyA/g/5NKNOPS9bPSN86PVnHG4=",
 			"path": "github.com/go-redis/redis",
 			"revision": "bd542089bb6e776e6fced5038edac8a0f526aa53",

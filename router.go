@@ -23,10 +23,10 @@ func route(cmd *commander.CommandGroup, cfg config) {
 	cmd.Command("/help", help.HelpCmd)
 	cmd.Command("/start", help.HelpCmd)
 
-	cmd.Command("/subscribe {feed?}", subscription.SubscribeCmd(cfg.redis))
-	cmd.Command("/unsubscribe {feed?}", subscription.UnsubscribeCmd(cfg.redis))
+	cmd.Command("/subscribe {feed?}", subscription.SubscribeCmd(cfg.db))
+	cmd.Command("/unsubscribe {feed?}", subscription.UnsubscribeCmd(cfg.db))
 
-	go subscription.StartMonitoringSubscriptions(cfg.redis, cfg.bot)
+	go subscription.StartMonitoringSubscriptions(cfg.redis, cfg.bot, cfg.db)
 
 	cmd.Command("/horario {grupo?}", horario.HorarioCmd(cfg.redis))
 	cmd.Command("/horario2 {grupo?}", horario.HorarioWeekCmd(cfg.redis))

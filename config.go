@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/subscription"
+
 	"github.com/go-redis/redis"
 	tb "github.com/go-telegram-bot-api/telegram-bot-api"
 )
@@ -14,6 +16,7 @@ type config struct {
 	redis          *redis.Client
 	logLevel       int
 	bot            *tb.BotAPI
+	db             *subscription.DBContext
 }
 
 func newConfig() config {
@@ -48,6 +51,13 @@ func newConfig() config {
 	if lvlEnv != "" {
 		cfg.logLevel, _ = strconv.Atoi(lvlEnv)
 	}
+
+	addr := os.Getenv("DB_HOST")
+	db := os.Getenv("DB_NAME")
+	username := os.Getenv("DB_USER")
+	pass := os.Getenv("DB_PASS")
+
+	cfg.db = subscription.New(addr, db, username, pass)
 
 	return cfg
 }

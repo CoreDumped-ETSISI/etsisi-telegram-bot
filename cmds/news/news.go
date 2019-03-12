@@ -7,7 +7,7 @@ import (
 	"github.com/guad/commander"
 )
 
-func handleCmd(ctx commander.Context, feed string) error {
+func handleCmd(ctx commander.Context, feed string, limit int) error {
 	bot := ctx.Arg("bot").(*tb.BotAPI)
 	update := ctx.Arg("update").(tb.Update)
 
@@ -24,6 +24,10 @@ func handleCmd(ctx commander.Context, feed string) error {
 
 	// blah blah blah
 	for i := range news {
+		if i >= limit {
+			break
+		}
+
 		sb.WriteString("> ")
 		sb.WriteString(news[i].Anchor)
 		sb.WriteRune('\n')
@@ -37,13 +41,13 @@ func handleCmd(ctx commander.Context, feed string) error {
 }
 
 func NewsCmd(ctx commander.Context) error {
-	return handleCmd(ctx, "news")
+	return handleCmd(ctx, "news", 5)
 }
 
 func AvisosCmd(ctx commander.Context) error {
-	return handleCmd(ctx, "avisos")
+	return handleCmd(ctx, "avisos", 5)
 }
 
 func CoreCmd(ctx commander.Context) error {
-	return handleCmd(ctx, "coredumped")
+	return handleCmd(ctx, "coredumped", 3)
 }
