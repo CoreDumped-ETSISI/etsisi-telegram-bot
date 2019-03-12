@@ -1,8 +1,7 @@
 package salas
 
 import (
-	"io"
-	"time"
+	"net/http"
 
 	tb "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/guad/commander"
@@ -14,22 +13,24 @@ func SalasCmd(ctx commander.Context) error {
 
 	chatID := update.Message.Chat.ID
 
-	bib, err := getSalas()
+	resp, err := http.Get("https://biblio.kolhos.chichasov.es/api/salas")
 
 	if err != nil {
 		return err
 	}
 
-	now := time.Now().In(time.UTC).Add(1 * time.Hour)
+	img, err := http.Post("https://renderer.kolhos.chichasov.es/api/salas", "application/json", resp.Body)
 
-	r, w := io.Pipe()
+	if err != nil {
+		return err
+	}
 
-	go generateImage(bib, timeToIndex(now.Hour(), now.Minute())+1, w)
+	defer img.Body.Close()
 
 	file := tb.FileReader{
 		Name:   "Salas de trabajo.png",
 		Size:   -1,
-		Reader: r,
+		Reader: img.Body,
 	}
 
 	msg := tb.NewPhotoUpload(chatID, file)

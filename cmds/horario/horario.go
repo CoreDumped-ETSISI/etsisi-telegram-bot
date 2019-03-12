@@ -1,8 +1,10 @@
 package horario
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
-	"io"
+	"net/http"
 	"strings"
 	"time"
 
@@ -141,14 +143,21 @@ func HorarioWeekCmd(redis *redis.Client) func(commander.Context) error {
 
 		// ASCII tables don't fit in group conversations.
 		if !update.Message.Chat.IsPrivate() {
-			r, w := io.Pipe()
+			var buf bytes.Buffer
+			err = json.NewEncoder(&buf).Encode(horario)
 
-			go generateImage(horario, w)
+			img, err := http.Post("https://renderer.kolhos.chichasov.es/api/horario", "application/json", &buf)
+
+			if err != nil {
+				return err
+			}
+
+			defer img.Body.Close()
 
 			file := tb.FileReader{
 				Name:   "horario.png",
 				Size:   -1,
-				Reader: r,
+				Reader: img.Body,
 			}
 
 			msg := tb.NewPhotoUpload(update.Message.Chat.ID, file)
