@@ -16,6 +16,7 @@ func HelpCmd(ctx commander.Context) error {
 /salas - Disponibilidad de salas de trabajo de la biblioteca.
 /noticias - Noticias generales de ETSISI.
 /avisos - Avisos para los alumnos.
+/coredumped - Blog de la asociación CoreDumped.
 /subscribe (canal?) - Suscribirse a un canal (noticias, avisos o status). Si no se especifica, se suscribe a todos los canales.
 /unsubscribe (canal?) - Desuscribirse de un canal (noticias, avisos o status). Si no se especifica, se desuscribe de todos los canales.
 /horario (grupo?) - Horario para hoy de tu grupo.
