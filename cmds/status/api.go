@@ -6,7 +6,7 @@ import (
 )
 
 func getStatus() ([]serviceStatus, error) {
-	resp, err := http.Get("https://status.kolhos.chichasov.es/")
+	resp, err := http.Get("https://status.kolhos.chichasov.es/api/status")
 
 	if err != nil {
 		return nil, err
