@@ -25,6 +25,7 @@ func route(cmd *commander.CommandGroup, cfg config) {
 
 	cmd.Command("/subscribe {feed?}", subscription.SubscribeCmd(cfg.db))
 	cmd.Command("/unsubscribe {feed?}", subscription.UnsubscribeCmd(cfg.db))
+	cmd.Command("/canales", subscription.GetAllChannelsCommand)
 
 	go subscription.StartMonitoringSubscriptions(cfg.redis, cfg.bot, cfg.db)
 

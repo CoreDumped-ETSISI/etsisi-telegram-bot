@@ -7,6 +7,7 @@ var (
 		"avisos",
 		"status",
 		"coredumped",
+		"menu",
 	}
 
 	normalMap = map[string]string{
@@ -16,6 +17,7 @@ var (
 		"status":     "SERVICE_STATUS_CHANNEL",
 		"status_bot": "SERVICE_STATUS_CHANNEL_INTERNAL",
 		"coredumped": "UNIVERSITY_COREDUMPED_CHANNEL",
+		"menu":       "CAFETERIA_NEW_MENU_AVAILABLE",
 	}
 	reverseMap = map[string]string{
 		"UNIVERSITY_NEWS_CHANNEL":         "noticias",
@@ -24,6 +26,7 @@ var (
 		"SERVICE_STATUS_CHANNEL":          "status",
 		"SERVICE_STATUS_CHANNEL_INTERNAL": "status_bot",
 		"UNIVERSITY_COREDUMPED_CHANNEL":   "coredumped",
+		"CAFETERIA_NEW_MENU_AVAILABLE":    "menu",
 	}
 
 	redisChannels = []string{
@@ -33,5 +36,6 @@ var (
 		"SERVICE_STATUS_CHANNEL",
 		"SERVICE_STATUS_CHANNEL_INTERNAL",
 		"UNIVERSITY_COREDUMPED_CHANNEL",
+		"CAFETERIA_NEW_MENU_AVAILABLE",
 	}
 )

@@ -169,3 +169,21 @@ func StartMonitoringSubscriptions(redis *redis.Client, bot *tb.BotAPI, s *DBCont
 		}
 	}
 }
+
+func GetAllChannelsCommand(ctx commander.Context) error {
+	bot := ctx.Arg("bot").(*tb.BotAPI)
+	update := ctx.Arg("update").(tb.Update)
+
+	var sb strings.Builder
+
+	sb.WriteString("Canales disponibles:\n\n")
+
+	for key := range normalMap {
+		sb.WriteString(key)
+		sb.WriteRune('\n')
+	}
+
+	msg := tb.NewMessage(update.Message.Chat.ID, sb.String())
+	_, err := bot.Send(msg)
+	return err
+}
