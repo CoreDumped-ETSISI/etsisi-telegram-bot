@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/bus"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/help"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/horario"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/menu"
@@ -34,4 +35,6 @@ func route(cmd *commander.CommandGroup, cfg config) {
 
 	cmd.Command("/status", status.StatusCmd)
 	cmd.Command("/status_bot", status.BotStatusCmd)
+
+	cmd.Command("/bus {stop:int?}", bus.BusCmd)
 }
