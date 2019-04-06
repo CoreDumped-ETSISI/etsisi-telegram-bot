@@ -17,4 +17,5 @@ type Bus struct {
 type UniversityStops struct {
 	SentidoSierra []Bus `json:"sierra"`
 	SentidoConde  []Bus `json:"conde"`
+	Puente        []Bus `json:"puente"`
 }

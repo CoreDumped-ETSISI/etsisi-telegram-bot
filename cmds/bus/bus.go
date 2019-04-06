@@ -72,6 +72,14 @@ func uniBusCmd(ctx commander.Context) error {
 		sb.WriteString(fmt.Sprintf(" - %v - %vm\n", bus.TimeLeft, bus.Distance))
 	}
 
+	sb.WriteString("<b>Puente Gasolinera</b> (#2712)\n")
+
+	for _, bus := range arrives.Puente {
+		sb.WriteString("🚌 ")
+		sb.WriteString(bus.LineID)
+		sb.WriteString(fmt.Sprintf(" - %v - %vm\n", bus.TimeLeft, bus.Distance))
+	}
+
 	msg := tb.NewMessage(update.Message.Chat.ID, sb.String())
 	msg.ParseMode = "html"
 	_, err = bot.Send(msg)
