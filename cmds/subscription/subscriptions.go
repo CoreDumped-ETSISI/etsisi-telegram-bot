@@ -3,6 +3,7 @@ package subscription
 import (
 	"encoding/json"
 	"strings"
+	"time"
 
 	"github.com/go-redis/redis"
 	tb "github.com/go-telegram-bot-api/telegram-bot-api"
@@ -100,7 +101,18 @@ func StartMonitoringSubscriptions(redis *redis.Client, bot *tb.BotAPI, s *DBCont
 
 	ch := pubsub.Channel()
 
+	limiter := time.Tick(10 * time.Minute)
+
 	for msg := range ch {
+		select {
+		case <-limiter:
+			// If we're under the rate-limit, proceed
+			break
+		default:
+			// Otherwise drop the event
+			continue
+		}
+
 		var item channelMessage
 		err := json.Unmarshal([]byte(msg.Payload), &item)
 
@@ -165,6 +177,12 @@ func StartMonitoringSubscriptions(redis *redis.Client, bot *tb.BotAPI, s *DBCont
 							}).Error("Error sending news item to user")
 					}
 				}
+
+				log.
+					WithFields(log.Fields{
+						"channel":     msg.Channel,
+						"subscribers": len(members),
+					}).Info("Sent to subscribers")
 			}
 		}
 	}
