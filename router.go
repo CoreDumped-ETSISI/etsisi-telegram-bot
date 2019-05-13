@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/bus"
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/exam"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/help"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/horario"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/menu"
@@ -40,4 +41,6 @@ func route(cmd *commander.CommandGroup, cfg config) {
 	cmd.Command("/bus {stop:int?}", bus.BusCmd)
 
 	cmd.Command("/tts", tts.TtsCmd)
+
+	cmd.Command("/exam {params*}", exam.ExamCmd(cfg.redis))
 }
