@@ -22,6 +22,8 @@ func getUserGrupo(redis *redis.Client, update tb.Update) string {
 }
 
 func getTagsForGroup(grp string) [][]string {
+	grp = strings.ToUpper(grp)
+
 	shared1 := regexp.MustCompile(`G[MT]1\d`)
 	shared2 := regexp.MustCompile(`G[MT]2\d`)
 
@@ -135,5 +137,5 @@ func ExamCmd(redis *redis.Client) func(commander.Context) error {
 }
 
 func getHelpMsg() string {
-	return "No sé de que grupo eres. Puedes guardar tu grupo con /horario (tu grupo) o buscar examenes con tags, e.g.\n/exam software year_1 optativa\n/exam ti year_4"
+	return "No sé de que grupo eres. Puedes guardar tu grupo con /horario (tu grupo) o buscar examenes con tags, e.g.\n/exam software year_1 optativa\n/exam ti year_4\nTags disponibles:\ngeneral, software, compu, ti, si, year_1, year_2, year_3, year_4, optativa."
 }
