@@ -1,11 +1,20 @@
 FROM golang:alpine AS build-env
 
 # Install certs
+RUN apk add --no-cache git
 RUN apk add --no-cache ca-certificates
+ENV CGO_ENABLED=0
 
-ADD . /go/src/github.com/CoreDumped-ETSISI/etsisi-telegram-bot
+WORKDIR /app
 
-RUN cd /go/src/github.com/CoreDumped-ETSISI/etsisi-telegram-bot && go build -o app
+ADD go.mod go.mod
+ADD go.sum go.sum
+
+RUN go mod download
+
+ADD . .
+
+RUN go build -o app
 
 FROM alpine
 
@@ -13,5 +22,5 @@ FROM alpine
 COPY --from=build-env /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs
 
 WORKDIR /app
-COPY --from=build-env /go/src/github.com/CoreDumped-ETSISI/etsisi-telegram-bot/app /app/
+COPY --from=build-env /app/app /app/
 ENTRYPOINT ./app
