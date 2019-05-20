@@ -49,6 +49,14 @@ func uniBusCmd(ctx commander.Context) error {
 	bot := ctx.Arg("bot").(*tb.BotAPI)
 	update := ctx.Arg("update").(tb.Update)
 
+	loadingMsg := tb.NewMessage(update.Message.Chat.ID, "Cargando ⏰")
+	loadingMsg.ParseMode = "html"
+	lmsg, err := bot.Send(loadingMsg)
+
+	if err != nil {
+		return err
+	}
+
 	arrives, err := getUniEstimates()
 
 	var sb strings.Builder
@@ -80,7 +88,7 @@ func uniBusCmd(ctx commander.Context) error {
 		sb.WriteString(fmt.Sprintf(" - %v - %vm\n", bus.TimeLeft, bus.Distance))
 	}
 
-	msg := tb.NewMessage(update.Message.Chat.ID, sb.String())
+	msg := tb.NewEditMessageText(update.Message.Chat.ID, lmsg.MessageID, sb.String())
 	msg.ParseMode = "html"
 	_, err = bot.Send(msg)
 	return err
