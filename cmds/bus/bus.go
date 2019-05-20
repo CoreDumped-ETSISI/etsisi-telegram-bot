@@ -59,6 +59,13 @@ func uniBusCmd(ctx commander.Context) error {
 
 	arrives, err := getUniEstimates()
 
+	if err != nil {
+		m := tb.NewEditMessageText(update.Message.Chat.ID, lmsg.MessageID, "Algo salió mal 💀")
+		_, _ = bot.Send(m)
+
+		return err
+	}
+
 	var sb strings.Builder
 
 	sb.WriteString("<b>Paradas ETSISI</b>\n")
