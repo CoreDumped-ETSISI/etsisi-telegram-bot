@@ -12,6 +12,8 @@ github.com/golang/protobuf v1.2.0 h1:P3YflyNX/ehuJFLhxviNdFxQPkGK5cDcApsge1SqnvM
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/guad/commander v0.0.0-20190227152414-7221bf6328ad h1:V3rPdPW9nlljuD6IVVhaum5FUG5EUmy4wY131XoaK4A=
 github.com/guad/commander v0.0.0-20190227152414-7221bf6328ad/go.mod h1:7ce3M3W5uf8LPC1eiRASlOk7cVKjPdPLCsm85qDwI1A=
+github.com/guad/commander v0.0.0-20190601145008-dba52a4a4804 h1:z/ghkFfVoBSYbr05vATE948WfVBM9VEd8MPMYxbgS/k=
+github.com/guad/commander v0.0.0-20190601145008-dba52a4a4804/go.mod h1:7ce3M3W5uf8LPC1eiRASlOk7cVKjPdPLCsm85qDwI1A=
 github.com/hpcloud/tail v1.0.0 h1:nfCOvKYfkgYP8hkirhJocXT2+zOD8yUNjXaWfTlyFKI=
 github.com/hpcloud/tail v1.0.0/go.mod h1:ab1qPbhIpdTxEkNHXyeSf5vhxWSCs/tWer42PpOxQnU=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1 h1:mweAR1A6xJ3oS2pRaGiHgQ4OO8tzTaLawm8vnODuwDk=
