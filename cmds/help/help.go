@@ -22,6 +22,7 @@ func HelpCmd(ctx commander.Context) error {
 /horario (grupo?) - Horario para hoy de tu grupo.
 /horario2 (grupo?) - Horario de la semana de tu grupo.
 /exam (tags...) - Exámenes finales de tu curso.
+/guias - Descargar guías de asignaturas.
 /status - Comprueba el estado de varios servicios de la uni.
 /bus (id parada?) - Tiempo de buses de la uni o de una parada concreta.
 /help - Este mensaje.

@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/bus"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/exam"
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/guides"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/help"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/horario"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/menu"
@@ -44,4 +45,11 @@ func route(cmd *commander.CommandGroup, cfg config, callbacks *commander.Command
 	cmd.Command("/tts", tts.TtsCmd)
 
 	cmd.Command("/exam {params*}", exam.ExamCmd(cfg.redis))
+
+	cmd.Command("/guias", guides.GuideCmd)
+	cmd.Command("/gg {code}", guides.DownloadGuideCmd)
+
+	// Callbacks
+
+	callbacks.Command("/gpag {grado} {offset:int}", guides.PaginateGradoCallback)
 }
