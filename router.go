@@ -15,7 +15,8 @@ import (
 	"github.com/guad/commander"
 )
 
-func route(cmd *commander.CommandGroup, cfg config) {
+// Note that underscores (_) are forbidden for command names.
+func route(cmd *commander.CommandGroup, cfg config, callbacks *commander.CommandGroup) {
 	cmd.Command("/menu", menu.CafeTodayCmd)
 	cmd.Command("/menu2", menu.CafeTomorrowCmd)
 	cmd.Command("/salas", salas.SalasCmd)
@@ -36,7 +37,7 @@ func route(cmd *commander.CommandGroup, cfg config) {
 	cmd.Command("/horario2 {grupo?}", horario.HorarioWeekCmd(cfg.redis))
 
 	cmd.Command("/status", status.StatusCmd)
-	cmd.Command("/status_bot", status.BotStatusCmd)
+	cmd.Command("/statusbot", status.BotStatusCmd)
 
 	cmd.Command("/bus {stop:int?}", bus.BusCmd)
 

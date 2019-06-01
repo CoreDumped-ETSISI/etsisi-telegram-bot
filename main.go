@@ -17,6 +17,7 @@ func main() {
 	config.bot = bot
 
 	cmd := commander.New()
+	callbacks := commander.New()
 
 	me, err := bot.GetMe()
 
@@ -24,19 +25,19 @@ func main() {
 		panic(err)
 	}
 
-	cmd.Preprocessor = &commander.TelegramPreprocessor{
+	cmd.Preprocessor = &CustomTelegramPreprocessor{
 		BotName: me.UserName,
 	}
 
-	route(cmd, config)
+	route(cmd, config, callbacks)
 	use(cmd, config)
 
 	for update := range updates {
-		go handleUpdate(bot, update, cmd)
+		go handleUpdate(bot, update, cmd, callbacks)
 	}
 }
 
-func handleUpdate(bot *tb.BotAPI, update tb.Update, cmd *commander.CommandGroup) {
+func handleUpdate(bot *tb.BotAPI, update tb.Update, cmd *commander.CommandGroup, callbacks *commander.CommandGroup) {
 	if update.Message != nil && update.Message.Text != "" {
 		ok, err := cmd.ExecuteWithContext(update.Message.Text, map[string]interface{}{
 			"bot":    bot,
@@ -55,5 +56,22 @@ func handleUpdate(bot *tb.BotAPI, update tb.Update, cmd *commander.CommandGroup)
 		}).Debug("Got update")
 
 		// General logging is done by the logging middleware.
+	} else if update.CallbackQuery != nil {
+		cq := update.CallbackQuery
+
+		ok, err := callbacks.ExecuteWithContext(cq.Data, map[string]interface{}{
+			"bot":    bot,
+			"update": update,
+		})
+
+		log.WithFields(log.Fields{
+			"chatid": cq.Message.Chat.ID,
+			"chat":   getChatTitle(cq.Message),
+			"sender": getSenderName(cq.Message.From),
+			"data":   cq.Data,
+			"error":  err,
+			"found":  ok,
+		}).Debug("Got query callback")
 	}
+
 }
