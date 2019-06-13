@@ -61,3 +61,13 @@ func newConfig() config {
 
 	return cfg
 }
+
+func (c *config) Redis() *redis.Client {
+	return c.redis
+}
+
+func (c *config) Mongo() *mgo.Session {
+	return c.db.DB
+}
+
+var _ state.T = &config{}

@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/state"
+
 	"github.com/go-redis/redis"
 	tb "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/guad/commander"
@@ -75,65 +77,64 @@ func getTagsForGroup(grp string) [][]string {
 	return nil
 }
 
-func ExamCmd(redis *redis.Client) func(commander.Context) error {
-	return func(ctx commander.Context) error {
-		bot := ctx.Arg("bot").(*tb.BotAPI)
-		update := ctx.Arg("update").(tb.Update)
-		params := ctx.ArgString("params")
+func ExamCmd(ctx commander.Context) error {
+	bot := ctx.Arg("bot").(*tb.BotAPI)
+	update := ctx.Arg("update").(tb.Update)
+	params := ctx.ArgString("params")
+	state := ctx.Arg("state").(state.T)
 
-		ex, err := getAllExams()
+	ex, err := getAllExams()
 
-		if err != nil {
-			return err
-		}
-
-		// TODO: Dont hardcode this
-		extraordinaria := time.Date(2019, time.June, 17, 0, 0, 0, 0, time.Local)
-
-		if time.Now().After(extraordinaria) {
-			ex = filterByDate(ex, time.Now(), time.Now().AddDate(1, 0, 0))
-		} else {
-			ex = filterByDate(ex, time.Now(), extraordinaria)
-		}
-
-		if params != "" {
-			tags := strings.Split(params, " ")
-			ex = filterByTags(ex, tags)
-		} else {
-			ug := getUserGrupo(redis, update)
-
-			if ug == "" {
-				msg := tb.NewMessage(update.Message.Chat.ID, getHelpMsg())
-				msg.ReplyToMessageID = update.Message.MessageID
-				bot.Send(msg)
-				return nil
-			}
-
-			tags := getTagsForGroup(ug)
-
-			if tags == nil {
-				msg := tb.NewMessage(update.Message.Chat.ID, getHelpMsg())
-				msg.ReplyToMessageID = update.Message.MessageID
-				bot.Send(msg)
-				return nil
-			}
-
-			ex = filterByTags(ex, tags...)
-		}
-
-		var sb strings.Builder
-
-		for _, exam := range ex {
-			sb.WriteString(fmt.Sprintf("📚 %v - <b>%v</b> (%v en Bloque %v)\n", exam.Day, exam.Name, exam.Timeslot, strings.Join(exam.Aulas, "/")))
-		}
-
-		msg := tb.NewMessage(update.Message.Chat.ID, sb.String())
-		msg.ReplyToMessageID = update.Message.MessageID
-		msg.ParseMode = "html"
-		bot.Send(msg)
-
-		return nil
+	if err != nil {
+		return err
 	}
+
+	// TODO: Dont hardcode this
+	extraordinaria := time.Date(2019, time.June, 17, 0, 0, 0, 0, time.Local)
+
+	if time.Now().After(extraordinaria) {
+		ex = filterByDate(ex, time.Now(), time.Now().AddDate(1, 0, 0))
+	} else {
+		ex = filterByDate(ex, time.Now(), extraordinaria)
+	}
+
+	if params != "" {
+		tags := strings.Split(params, " ")
+		ex = filterByTags(ex, tags)
+	} else {
+		ug := getUserGrupo(state.Redis(), update)
+
+		if ug == "" {
+			msg := tb.NewMessage(update.Message.Chat.ID, getHelpMsg())
+			msg.ReplyToMessageID = update.Message.MessageID
+			bot.Send(msg)
+			return nil
+		}
+
+		tags := getTagsForGroup(ug)
+
+		if tags == nil {
+			msg := tb.NewMessage(update.Message.Chat.ID, getHelpMsg())
+			msg.ReplyToMessageID = update.Message.MessageID
+			bot.Send(msg)
+			return nil
+		}
+
+		ex = filterByTags(ex, tags...)
+	}
+
+	var sb strings.Builder
+
+	for _, exam := range ex {
+		sb.WriteString(fmt.Sprintf("📚 %v - <b>%v</b> (%v en Bloque %v)\n", exam.Day, exam.Name, exam.Timeslot, strings.Join(exam.Aulas, "/")))
+	}
+
+	msg := tb.NewMessage(update.Message.Chat.ID, sb.String())
+	msg.ReplyToMessageID = update.Message.MessageID
+	msg.ParseMode = "html"
+	bot.Send(msg)
+
+	return nil
 }
 
 func getHelpMsg() string {

@@ -33,15 +33,16 @@ func main() {
 	use(cmd, config)
 
 	for update := range updates {
-		go handleUpdate(bot, update, cmd, callbacks)
+		go handleUpdate(config, bot, update, cmd, callbacks)
 	}
 }
 
-func handleUpdate(bot *tb.BotAPI, update tb.Update, cmd *commander.CommandGroup, callbacks *commander.CommandGroup) {
+func handleUpdate(state state.T, bot *tb.BotAPI, update tb.Update, cmd *commander.CommandGroup, callbacks *commander.CommandGroup) {
 	if update.Message != nil && update.Message.Text != "" {
 		ok, err := cmd.ExecuteWithContext(update.Message.Text, map[string]interface{}{
 			"bot":    bot,
 			"update": update,
+			"state": state,
 		})
 
 		// TODO: Maybe send the user a message with the error?
@@ -54,14 +55,20 @@ func handleUpdate(bot *tb.BotAPI, update tb.Update, cmd *commander.CommandGroup,
 			"error":  err,
 			"found":  ok,
 		}).Debug("Got update")
-
 		// General logging is done by the logging middleware.
+
+		cmd.TriggerWithContext("text", map[string]interface{}{
+			"bot":    bot,
+			"update": update,
+			"state": state,
+		})
 	} else if update.CallbackQuery != nil {
 		cq := update.CallbackQuery
 
 		ok, err := callbacks.ExecuteWithContext(cq.Data, map[string]interface{}{
 			"bot":    bot,
 			"update": update,
+			"state": state,
 		})
 
 		log.WithFields(log.Fields{

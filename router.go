@@ -6,6 +6,7 @@ import (
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/guides"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/help"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/horario"
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/janitor"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/menu"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/news"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/salas"
@@ -34,8 +35,8 @@ func route(cmd *commander.CommandGroup, cfg config, callbacks *commander.Command
 
 	go subscription.StartMonitoringSubscriptions(cfg.redis, cfg.bot, cfg.db)
 
-	cmd.Command("/horario {grupo?}", horario.HorarioCmd(cfg.redis))
-	cmd.Command("/horario2 {grupo?}", horario.HorarioWeekCmd(cfg.redis))
+	cmd.Command("/horario {grupo?}", horario.HorarioCmd)
+	cmd.Command("/horario2 {grupo?}", horario.HorarioWeekCmd)
 
 	cmd.Command("/status", status.StatusCmd)
 	cmd.Command("/statusbot", status.BotStatusCmd)
@@ -44,12 +45,14 @@ func route(cmd *commander.CommandGroup, cfg config, callbacks *commander.Command
 
 	cmd.Command("/tts", tts.TtsCmd)
 
-	cmd.Command("/exam {params*}", exam.ExamCmd(cfg.redis))
+	cmd.Command("/exam {params*}", exam.ExamCmd)
 
 	cmd.Command("/guias", guides.GuideCmd)
 	cmd.Command("/gg {code}", guides.DownloadGuideCmd)
 
 	// Callbacks
-
 	callbacks.Command("/gpag {grado} {offset:int}", guides.PaginateGradoCallback)
+
+	// Events
+	cmd.Event("text", janitor.OnMessage)
 }

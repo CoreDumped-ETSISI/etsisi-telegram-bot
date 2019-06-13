@@ -8,7 +8,7 @@ import (
 )
 
 type DBContext struct {
-	db *mgo.Session
+	DB *mgo.Session
 }
 
 func New(addr, db, username, pass string) *DBContext {
@@ -27,12 +27,12 @@ func New(addr, db, username, pass string) *DBContext {
 	}
 
 	return &DBContext{
-		db: database,
+		DB: database,
 	}
 }
 
 func (s *DBContext) getSubscribers(channel string) ([]int64, error) {
-	sesh := s.db.Clone()
+	sesh := s.DB.Clone()
 	defer sesh.Close()
 
 	col := sesh.DB("etsisi-telegram-bot").C("subscriptions")
@@ -51,7 +51,7 @@ func (s *DBContext) getSubscribers(channel string) ([]int64, error) {
 }
 
 func (s *DBContext) addSubscriber(channel string, user int64) error {
-	sesh := s.db.Clone()
+	sesh := s.DB.Clone()
 	defer sesh.Close()
 
 	col := sesh.DB("etsisi-telegram-bot").C("subscriptions")
@@ -77,7 +77,7 @@ func (s *DBContext) addSubscriber(channel string, user int64) error {
 }
 
 func (s *DBContext) removeSubscriber(channel string, user int64) error {
-	sesh := s.db.Clone()
+	sesh := s.DB.Clone()
 	defer sesh.Close()
 
 	col := sesh.DB("etsisi-telegram-bot").C("subscriptions")
