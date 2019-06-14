@@ -11,6 +11,7 @@ import (
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/news"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/salas"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/status"
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/stub"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/subscription"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/tts"
 
@@ -38,8 +39,8 @@ func route(cmd *commander.CommandGroup, cfg config, callbacks *commander.Command
 	cmd.Command("/horario {grupo?}", horario.HorarioCmd)
 	cmd.Command("/horario2 {grupo?}", horario.HorarioWeekCmd)
 
-	cmd.Command("/status", status.StatusCmd)
-	cmd.Command("/statusbot", status.BotStatusCmd)
+	cmd.Command("/status", stub.Middleware(status.StatusCmd))
+	cmd.Command("/statusbot", stub.Middleware(status.BotStatusCmd))
 
 	cmd.Command("/bus {stop:int?}", bus.BusCmd)
 
