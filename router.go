@@ -28,7 +28,7 @@ func route(cmd *commander.CommandGroup, cfg config, callbacks *commander.Command
 	cmd.Command("/coredumped", news.CoreCmd)
 
 	cmd.Command("/help", help.HelpCmd)
-	cmd.Command("/start", help.HelpCmd)
+	cmd.Command("/start {data*}", help.Start)
 
 	cmd.Command("/subscribe {feed?}", subscription.SubscribeCmd(cfg.db))
 	cmd.Command("/unsubscribe {feed?}", subscription.UnsubscribeCmd(cfg.db))
@@ -51,11 +51,43 @@ func route(cmd *commander.CommandGroup, cfg config, callbacks *commander.Command
 	cmd.Command("/guias", guides.GuideCmd)
 	cmd.Command("/gg {code}", guides.DownloadGuideCmd)
 
+	cmd.Command("/manage", janitor.AdminOnlyMiddleware(janitor.Manage))
+	cmd.Command("/ban",
+		janitor.AdminOnlyMiddleware(
+			janitor.ManagedOnlyMiddleware(janitor.Ban),
+		),
+	)
+
+	cmd.Command("/unban {user:int}",
+		janitor.AdminOnlyMiddleware(
+			janitor.ManagedOnlyMiddleware(janitor.Unban),
+		),
+	)
+
 	// Callbacks
 	callbacks.Command("/gpag {grado} {offset:int}", guides.PaginateGradoCallback)
 
 	callbacks.Command("/exyear {grado}", exam.SelectYearCb)
 	callbacks.Command("/exshow {grado} {curso:int}", exam.ShowExamsCb)
+
+	callbacks.Command("/jannyrefresh {chatid} {public}",
+		janitor.AdminOnlyMiddleware(
+			janitor.ManagedOnlyMiddleware(janitor.RefreshCb),
+		),
+	)
+
+	callbacks.Command("/janmnypublictoggle {chatid} {public}",
+		janitor.AdminOnlyMiddleware(
+			janitor.ManagedOnlyMiddleware(janitor.TogglePublicCb),
+		),
+	)
+
+	callbacks.Command("/jannydisable {chatid}",
+		janitor.AdminOnlyMiddleware(
+			janitor.ManagedOnlyMiddleware(janitor.DisableCb),
+		),
+	)
+
 	// Events
 	cmd.Event("text", janitor.OnMessage)
 }
