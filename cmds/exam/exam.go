@@ -11,6 +11,7 @@ import (
 	"github.com/go-redis/redis"
 	tb "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/guad/commander"
+	log "github.com/sirupsen/logrus"
 )
 
 func getUserGrupo(redis *redis.Client, update tb.Update) string {
@@ -69,7 +70,7 @@ func getTagsForGroup(grp string) [][]string {
 	last := regexp.MustCompile(`4\d$`)
 
 	if last.MatchString(grp) {
-		return [][]string{[]string{"general", "year_3"},
+		return [][]string{
 			[]string{"year_4"},
 		}
 	}
@@ -153,31 +154,37 @@ func ShowExamsCb(ctx commander.Context) error {
 		return err
 	}
 
-	params := ctx.Arg("tags").([][]string)
+	params, ok := ctx.Arg("tags").([][]string)
 
-	if params != nil {
+	if ok && params != nil {
+		log.WithField("tags", params).Debug("found tags for group")
+
 		ex = filterByTags(ex, params...)
 	} else {
-		// TODO: Dont hardcode this
-		extraordinaria := time.Date(2019, time.June, 17, 0, 0, 0, 0, time.Local)
-
-		if time.Now().After(extraordinaria) {
-			ex = filterByDate(ex, time.Now(), time.Now().AddDate(1, 0, 0))
-		} else {
-			ex = filterByDate(ex, time.Now(), extraordinaria)
-		}
-
 		if curso <= 2 {
 			ex = filterByTags(ex, []string{cursotag, "general"})
 		} else {
-			ex = filterByTags(ex, []string{cursotag, grado})
+			ex = filterByTags(ex, []string{cursotag, grado}, []string{cursotag, "general"})
 		}
+	}
+
+	// TODO: Dont hardcode this
+	extraordinaria := time.Date(2019, time.June, 17, 0, 0, 0, 0, time.Local)
+
+	if time.Now().After(extraordinaria) {
+		ex = filterByDate(ex, time.Now(), time.Now().AddDate(1, 0, 0))
+	} else {
+		ex = filterByDate(ex, time.Now(), extraordinaria)
 	}
 
 	var sb strings.Builder
 
 	for _, exam := range ex {
 		sb.WriteString(fmt.Sprintf("📚 %v - <b>%v</b> (%v en Bloque %v)\n", exam.Day, exam.Name, exam.Timeslot, strings.Join(exam.Aulas, "/")))
+	}
+
+	if sb.Len() == 0 {
+		sb.WriteString("Por ahora no tienes examenes.")
 	}
 
 	if params != nil {
