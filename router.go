@@ -76,7 +76,7 @@ func route(cmd *commander.CommandGroup, cfg config, callbacks *commander.Command
 		),
 	)
 
-	callbacks.Command("/janmnypublictoggle {chatid} {public}",
+	callbacks.Command("/jannypublictoggle {chatid} {public}",
 		janitor.AdminOnlyMiddleware(
 			janitor.ManagedOnlyMiddleware(janitor.TogglePublicCb),
 		),
