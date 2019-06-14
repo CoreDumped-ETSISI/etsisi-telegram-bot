@@ -32,6 +32,7 @@ func main() {
 
 	route(cmd, config, callbacks)
 	use(cmd, config)
+	callbacks.Use(callbackLoggerMiddleware)
 
 	for update := range updates {
 		go handleUpdate(&config, bot, update, cmd, callbacks)

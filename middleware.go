@@ -85,6 +85,35 @@ func loggerMiddleware(next commander.Handler) commander.Handler {
 	}
 }
 
+func callbackLoggerMiddleware(next commander.Handler) commander.Handler {
+	return func(ctx commander.Context) error {
+		update := ctx.Arg("update").(tb.Update)
+
+		pre := time.Now()
+
+		// TODO: Recover from panic
+		err := next(ctx)
+
+		elapsed := time.Now().Sub(pre)
+
+		if err != nil {
+			log.
+				WithError(err).
+				WithFields(log.Fields{
+					"command": ctx.Name,
+					"args":    ctx.Args,
+					"chatid":  update.CallbackQuery.Message.Chat.ID,
+					"chat":    getChatTitle(update.CallbackQuery.Message),
+					"sender":  getSenderName(update.CallbackQuery.Message.From),
+					"text":    update.CallbackQuery.Data,
+					"elapsed": elapsed,
+				}).Error("Error when executing command")
+		}
+
+		return err
+	}
+}
+
 func use(cmd *commander.CommandGroup, cfg config) {
 	cmd.Use(loggerMiddleware)
 	cmd.Use(cfg.ratelimitMiddleware)
