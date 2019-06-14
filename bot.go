@@ -20,6 +20,7 @@ func startBot() (*tb.BotAPI, tb.UpdatesChannel) {
 
 	if url == "" {
 		// No webhook setup, use polling
+		_, _ = bot.RemoveWebhook()
 		u := tb.NewUpdate(0)
 		u.Timeout = 60
 
@@ -49,7 +50,13 @@ func startBot() (*tb.BotAPI, tb.UpdatesChannel) {
 
 	updates := bot.ListenForWebhook("/wh/" + token)
 
-	go http.ListenAndServe("0.0.0.0:8080", nil)
+	port := "8080"
+
+	if ep := os.Getenv("WEBHOOK_PORT"); ep != "" {
+		port = ep
+	}
+
+	go http.ListenAndServe("0.0.0.0:"+port, nil)
 
 	log.Info("Iniciado y escuchando!")
 
