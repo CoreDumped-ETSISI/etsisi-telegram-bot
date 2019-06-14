@@ -21,7 +21,7 @@ func HelpCmd(ctx commander.Context) error {
 /unsubscribe (canal?) - Desuscribirse de un canal (/canales). Si no se especifica, se desuscribe de todos los canales.
 /horario (grupo?) - Horario para hoy de tu grupo.
 /horario2 (grupo?) - Horario de la semana de tu grupo.
-/exam (tags...) - Exámenes finales de tu curso.
+/exam  - Exámenes finales de tu curso.
 /guias - Descargar guías de asignaturas.
 /status - Comprueba el estado de varios servicios de la uni.
 /bus (id parada?) - Tiempo de buses de la uni o de una parada concreta.

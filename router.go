@@ -45,7 +45,7 @@ func route(cmd *commander.CommandGroup, cfg config, callbacks *commander.Command
 
 	cmd.Command("/tts", tts.TtsCmd)
 
-	cmd.Command("/exam {params*}", exam.ExamCmd)
+	cmd.Command("/exam", exam.ExamCmd)
 
 	cmd.Command("/guias", guides.GuideCmd)
 	cmd.Command("/gg {code}", guides.DownloadGuideCmd)
