@@ -77,4 +77,5 @@ func handleUpdate(state state.T, bot *tb.BotAPI, update tb.Update, cmd *commande
 		}).Debug("Got query callback")
 	}
 
+	cmd.TriggerWithContext("update", ctx)
 }
