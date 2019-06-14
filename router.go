@@ -89,5 +89,5 @@ func route(cmd *commander.CommandGroup, cfg config, callbacks *commander.Command
 	)
 
 	// Events
-	cmd.Event("text", janitor.OnMessage)
+	cmd.Event("update", janitor.OnUpdate)
 }

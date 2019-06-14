@@ -9,6 +9,6 @@ type banEvent struct {
 type channelManagement struct {
 	ChatID   int64  `bson:"_id,omitempty"`
 	AdminsID []int  `bson:"admins_id,omitempty"`
-	Public   bool   `bson:"public,omitempty"`
+	Public   bool   `bson:"public"`
 	Name     string `bson:"name,omitempty"`
 }

@@ -20,10 +20,10 @@ var (
 	ErrBotNotAdmin = errors.New("El bot debe ser administrador de este grupo")
 )
 
-func OnMessage(ctx commander.Context) error {
+func OnUpdate(ctx commander.Context) error {
 	update := ctx.Arg("update").(tb.Update)
 
-	if update.Message.NewChatMembers != nil {
+	if update.Message != nil && update.Message.NewChatMembers != nil {
 		for _, m := range *update.Message.NewChatMembers {
 			onChatJoin(ctx, update.Message.Chat.ID, m)
 		}
@@ -43,7 +43,7 @@ func onChatJoin(ctx commander.Context, chat int64, member tb.User) error {
 
 	if !verify.IsUserVerified(state, member.ID) {
 		m := tb.NewMessage(chat, fmt.Sprintf("%v, para acceder a este chat, tienes que verificar tu cuenta de telegram.", member.String()))
-		btn := tb.NewInlineKeyboardButtonURL("Verificar ✔", "https://t.me/"+bot.Self.UserName+"?start=verifyme")
+		btn := tb.NewInlineKeyboardButtonURL("Verificar ✅", "https://t.me/"+bot.Self.UserName+"?start=verifyme")
 
 		m.ReplyMarkup = tb.NewInlineKeyboardMarkup([]tb.InlineKeyboardButton{btn})
 
@@ -173,7 +173,7 @@ func Manage(ctx commander.Context) error {
 			}
 		}
 
-		m := tb.NewMessage(update.Message.Chat.ID, "Este grupo ahora es moderado por mí.")
+		m := tb.NewMessage(update.Message.Chat.ID, "Este grupo ahora es moderado por mí 😈")
 		_, err = bot.Send(m)
 		return err
 	} else {
@@ -203,19 +203,19 @@ func showManagementMenu(ctx commander.Context) error {
 
 	m := tb.NewMessage(chat.ID, "Administración del canal")
 
-	var emoji rune
+	var emoji string
 
 	if chanman.Public {
-		emoji = '✔'
+		emoji = "✅"
 	} else {
-		emoji = '❌'
+		emoji = "❌"
 	}
 
-	buttons := tb.NewInlineKeyboardMarkup([]tb.InlineKeyboardButton{
-		tb.NewInlineKeyboardButtonData("Actualizar", fmt.Sprintf("/jannyrefresh %v %v", chat.ID, chanman.Public)),
-		tb.NewInlineKeyboardButtonData(fmt.Sprintf("Público %v", emoji), fmt.Sprintf("/jannypublictoggle %v %v", chat.ID, !chanman.Public)),
-		tb.NewInlineKeyboardButtonData("Desactivar", fmt.Sprintf("/jannydisable %v", chat.ID)),
-	})
+	buttons := tb.NewInlineKeyboardMarkup(
+		tb.NewInlineKeyboardRow(tb.NewInlineKeyboardButtonData("Actualizar", fmt.Sprintf("/jannyrefresh %v %v", chat.ID, chanman.Public))),
+		tb.NewInlineKeyboardRow(tb.NewInlineKeyboardButtonData(fmt.Sprintf("Público %v", emoji), fmt.Sprintf("/jannypublictoggle %v %v", chat.ID, !chanman.Public))),
+		tb.NewInlineKeyboardRow(tb.NewInlineKeyboardButtonData("Desactivar", fmt.Sprintf("/jannydisable %v", chat.ID))),
+	)
 
 	m.ReplyMarkup = buttons
 
@@ -366,19 +366,19 @@ func TogglePublicCb(ctx commander.Context) error {
 	pubraw := ctx.ArgString("public")
 	public, _ := strconv.ParseBool(pubraw)
 
-	var emoji rune
+	var emoji string
 
 	if public {
-		emoji = '✔'
+		emoji = "✅"
 	} else {
-		emoji = '❌'
+		emoji = "❌"
 	}
 
-	buttons := tb.NewInlineKeyboardMarkup([]tb.InlineKeyboardButton{
-		tb.NewInlineKeyboardButtonData("Actualizar", fmt.Sprintf("/jannyrefresh %v %v", chatid, public)),
-		tb.NewInlineKeyboardButtonData(fmt.Sprintf("Público %v", emoji), fmt.Sprintf("/jannypublictoggle %v %v", chatid, !public)),
-		tb.NewInlineKeyboardButtonData("Desactivar", fmt.Sprintf("/jannydisable %v", chatid)),
-	})
+	buttons := tb.NewInlineKeyboardMarkup(
+		tb.NewInlineKeyboardRow(tb.NewInlineKeyboardButtonData("Actualizar", fmt.Sprintf("/jannyrefresh %v %v", chatid, public))),
+		tb.NewInlineKeyboardRow(tb.NewInlineKeyboardButtonData(fmt.Sprintf("Público %v", emoji), fmt.Sprintf("/jannypublictoggle %v %v", chatid, !public))),
+		tb.NewInlineKeyboardRow(tb.NewInlineKeyboardButtonData("Desactivar", fmt.Sprintf("/jannydisable %v", chatid))),
+	)
 
 	m := tb.NewEditMessageReplyMarkup(chatid, update.CallbackQuery.Message.MessageID, buttons)
 

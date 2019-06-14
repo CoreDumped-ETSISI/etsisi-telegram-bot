@@ -1,9 +1,16 @@
 package janitor
 
 import (
+	"errors"
+
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/state"
 	tb "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/guad/commander"
+)
+
+var (
+	ErrNotAnAdmin     = errors.New("You are not an administrator")
+	ErrChatNotManaged = errors.New("This chat is not managed")
 )
 
 func AdminOnlyMiddleware(next commander.Handler) commander.Handler {
@@ -43,11 +50,11 @@ func AdminOnlyMiddleware(next commander.Handler) commander.Handler {
 			return err
 		}
 
-		if !m.IsAdministrator() {
-			return nil
+		if m.IsAdministrator() || m.IsCreator() {
+			return next(ctx)
 		}
 
-		return next(ctx)
+		return ErrNotAnAdmin
 	}
 }
 
@@ -84,7 +91,7 @@ func ManagedOnlyMiddleware(next commander.Handler) commander.Handler {
 
 		// If it's not managed, stop.
 		if !managed {
-			return nil
+			return ErrChatNotManaged
 		}
 
 		return next(ctx)
