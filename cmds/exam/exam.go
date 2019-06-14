@@ -80,8 +80,72 @@ func getTagsForGroup(grp string) [][]string {
 func ExamCmd(ctx commander.Context) error {
 	bot := ctx.Arg("bot").(*tb.BotAPI)
 	update := ctx.Arg("update").(tb.Update)
-	params := ctx.ArgString("params")
 	state := ctx.Arg("state").(state.T)
+
+	ug := getUserGrupo(state.Redis(), update)
+
+	if ug != "" {
+		tags := getTagsForGroup(ug)
+
+		if tags != nil {
+			ctx.AddArg("tags", tags)
+			return ShowExamsCb(ctx)
+		}
+	}
+
+	msg := tb.NewMessage(update.Message.Chat.ID, "Por favor, seleccione el grado.")
+
+	var blist [][]tb.InlineKeyboardButton
+
+	for k, v := range Grados {
+		button := tb.NewInlineKeyboardButtonData(k, fmt.Sprintf("/exyear %v", v))
+		row := tb.NewInlineKeyboardRow(button)
+		blist = append(blist, row)
+	}
+
+	markup := tb.NewInlineKeyboardMarkup(blist...)
+
+	msg.ReplyMarkup = markup
+
+	_, err := bot.Send(msg)
+
+	return err
+}
+
+// /exyear {grado}
+func SelectYearCb(ctx commander.Context) error {
+	bot := ctx.Arg("bot").(*tb.BotAPI)
+	update := ctx.Arg("update").(tb.Update)
+
+	grado := ctx.ArgString("grado")
+
+	msg := tb.NewEditMessageText(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Message.MessageID, "Por favor, seleccione el curso.")
+
+	var blist [][]tb.InlineKeyboardButton
+
+	for i := 1; i <= 4; i++ {
+		button := tb.NewInlineKeyboardButtonData(fmt.Sprintf("Curso %v", i), fmt.Sprintf("/exshow %v %v", grado, i))
+		row := tb.NewInlineKeyboardRow(button)
+		blist = append(blist, row)
+	}
+
+	markup := tb.NewInlineKeyboardMarkup(blist...)
+
+	msg.ReplyMarkup = &markup
+
+	_, err := bot.Send(msg)
+
+	return err
+}
+
+// /exshow {grado} {curso:int}
+func ShowExamsCb(ctx commander.Context) error {
+	bot := ctx.Arg("bot").(*tb.BotAPI)
+	update := ctx.Arg("update").(tb.Update)
+
+	grado := ctx.ArgString("grado")
+	curso := ctx.ArgInt("curso")
+	cursotag := fmt.Sprintf("year_%v", curso)
 
 	ex, err := getAllExams()
 
@@ -89,38 +153,25 @@ func ExamCmd(ctx commander.Context) error {
 		return err
 	}
 
-	// TODO: Dont hardcode this
-	extraordinaria := time.Date(2019, time.June, 17, 0, 0, 0, 0, time.Local)
+	params := ctx.Arg("tags").([][]string)
 
-	if time.Now().After(extraordinaria) {
-		ex = filterByDate(ex, time.Now(), time.Now().AddDate(1, 0, 0))
+	if params != nil {
+		ex = filterByTags(ex, params...)
 	} else {
-		ex = filterByDate(ex, time.Now(), extraordinaria)
-	}
+		// TODO: Dont hardcode this
+		extraordinaria := time.Date(2019, time.June, 17, 0, 0, 0, 0, time.Local)
 
-	if params != "" {
-		tags := strings.Split(params, " ")
-		ex = filterByTags(ex, tags)
-	} else {
-		ug := getUserGrupo(state.Redis(), update)
-
-		if ug == "" {
-			msg := tb.NewMessage(update.Message.Chat.ID, getHelpMsg())
-			msg.ReplyToMessageID = update.Message.MessageID
-			bot.Send(msg)
-			return nil
+		if time.Now().After(extraordinaria) {
+			ex = filterByDate(ex, time.Now(), time.Now().AddDate(1, 0, 0))
+		} else {
+			ex = filterByDate(ex, time.Now(), extraordinaria)
 		}
 
-		tags := getTagsForGroup(ug)
-
-		if tags == nil {
-			msg := tb.NewMessage(update.Message.Chat.ID, getHelpMsg())
-			msg.ReplyToMessageID = update.Message.MessageID
-			bot.Send(msg)
-			return nil
+		if curso <= 2 {
+			ex = filterByTags(ex, []string{cursotag, "general"})
+		} else {
+			ex = filterByTags(ex, []string{cursotag, grado})
 		}
-
-		ex = filterByTags(ex, tags...)
 	}
 
 	var sb strings.Builder
@@ -129,14 +180,15 @@ func ExamCmd(ctx commander.Context) error {
 		sb.WriteString(fmt.Sprintf("📚 %v - <b>%v</b> (%v en Bloque %v)\n", exam.Day, exam.Name, exam.Timeslot, strings.Join(exam.Aulas, "/")))
 	}
 
-	msg := tb.NewMessage(update.Message.Chat.ID, sb.String())
-	msg.ReplyToMessageID = update.Message.MessageID
-	msg.ParseMode = "html"
-	bot.Send(msg)
+	if params != nil {
+		msg := tb.NewMessage(update.Message.Chat.ID, sb.String())
+		msg.ParseMode = "html"
+		_, err = bot.Send(msg)
+	} else {
+		msg := tb.NewEditMessageText(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Message.MessageID, sb.String())
+		msg.ParseMode = "html"
+		_, err = bot.Send(msg)
+	}
 
-	return nil
-}
-
-func getHelpMsg() string {
-	return "No sé de que grupo eres. Puedes guardar tu grupo con /horario (tu grupo) o buscar examenes con tags, e.g.\n/exam software year_1 optativa\n/exam ti year_4\nTags disponibles:\ngeneral, software, compu, ti, si, year_1, year_2, year_3, year_4, optativa."
+	return err
 }

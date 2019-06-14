@@ -34,6 +34,7 @@ func fillDates(exams []Exam) {
 		e := exams[i]
 
 		e.DateTime, _ = time.Parse("2/1/2006", e.Date)
+		e.DateTime.Add(23 * time.Hour) // It should show up the date of the exam.
 
 		exams[i] = e
 	}

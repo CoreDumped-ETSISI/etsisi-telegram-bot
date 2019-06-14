@@ -12,3 +12,13 @@ type Exam struct {
 	DateTime time.Time `json:"-"`
 	Tags     []string  `json:"tags"`
 }
+
+var (
+	Grados = map[string]string{
+		"Software":     "software",
+		"Computadores": "compu",
+		"SI":           "si",
+		"TI":           "ti",
+		"Optativas":    "optativa",
+	}
+)

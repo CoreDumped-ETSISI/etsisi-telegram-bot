@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/state"
 	"github.com/guad/commander"
 
 	tb "github.com/go-telegram-bot-api/telegram-bot-api"
@@ -33,7 +34,7 @@ func main() {
 	use(cmd, config)
 
 	for update := range updates {
-		go handleUpdate(config, bot, update, cmd, callbacks)
+		go handleUpdate(&config, bot, update, cmd, callbacks)
 	}
 }
 
@@ -42,7 +43,7 @@ func handleUpdate(state state.T, bot *tb.BotAPI, update tb.Update, cmd *commande
 		ok, err := cmd.ExecuteWithContext(update.Message.Text, map[string]interface{}{
 			"bot":    bot,
 			"update": update,
-			"state": state,
+			"state":  state,
 		})
 
 		// TODO: Maybe send the user a message with the error?
@@ -60,7 +61,7 @@ func handleUpdate(state state.T, bot *tb.BotAPI, update tb.Update, cmd *commande
 		cmd.TriggerWithContext("text", map[string]interface{}{
 			"bot":    bot,
 			"update": update,
-			"state": state,
+			"state":  state,
 		})
 	} else if update.CallbackQuery != nil {
 		cq := update.CallbackQuery
@@ -68,7 +69,7 @@ func handleUpdate(state state.T, bot *tb.BotAPI, update tb.Update, cmd *commande
 		ok, err := callbacks.ExecuteWithContext(cq.Data, map[string]interface{}{
 			"bot":    bot,
 			"update": update,
-			"state": state,
+			"state":  state,
 		})
 
 		log.WithFields(log.Fields{

@@ -53,6 +53,8 @@ func route(cmd *commander.CommandGroup, cfg config, callbacks *commander.Command
 	// Callbacks
 	callbacks.Command("/gpag {grado} {offset:int}", guides.PaginateGradoCallback)
 
+	callbacks.Command("/exyear {grado}", exam.SelectYearCb)
+	callbacks.Command("/exshow {grado} {curso:int}", exam.ShowExamsCb)
 	// Events
 	cmd.Event("text", janitor.OnMessage)
 }
