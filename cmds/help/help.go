@@ -1,9 +1,25 @@
 package help
 
 import (
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/verify"
 	tb "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/guad/commander"
 )
+
+func Start(ctx commander.Context) error {
+	data := ctx.Arg("data")
+
+	if data == "" {
+		return HelpCmd(ctx)
+	}
+
+	switch data {
+	case "verifyme":
+		return verify.Cmd(ctx)
+	}
+
+	return nil
+}
 
 func HelpCmd(ctx commander.Context) error {
 	bot := ctx.Arg("bot").(*tb.BotAPI)
