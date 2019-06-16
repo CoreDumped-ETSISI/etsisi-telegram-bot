@@ -8,6 +8,8 @@ github.com/go-redis/redis v0.0.0-20190221082904-bd542089bb6e h1:w1yz1/JOfAJDPN9P
 github.com/go-redis/redis v0.0.0-20190221082904-bd542089bb6e/go.mod h1:NAIEuMOZ/fxfXJIrKDQDz8wamY7mA7PouImQ2Jvg6kA=
 github.com/go-telegram-bot-api/telegram-bot-api v0.0.0-20181225215658-ec221ba9ea45 h1:Yy8wLNaxKZw05yxrFBLgyU1GrMDS0Ei2vJeYC3twgrQ=
 github.com/go-telegram-bot-api/telegram-bot-api v0.0.0-20181225215658-ec221ba9ea45/go.mod h1:qf9acutJ8cwBUhm1bqgz6Bei9/C/c93FPDljKWwsOgM=
+github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible h1:2cauKuaELYAEARXRkq2LrJ0yDDv1rW7+wrTEdVL3uaU=
+github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible/go.mod h1:qf9acutJ8cwBUhm1bqgz6Bei9/C/c93FPDljKWwsOgM=
 github.com/golang/protobuf v1.2.0 h1:P3YflyNX/ehuJFLhxviNdFxQPkGK5cDcApsge1SqnvM=
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/guad/commander v0.0.0-20190614120819-af7da931b30e h1:JG0mTzWis1f6hd8c0kWIqeFRJ6XctBXPMu/8puSlBgQ=
