@@ -14,6 +14,7 @@ import (
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/stub"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/subscription"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/tts"
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/verify"
 
 	"github.com/guad/commander"
 )
@@ -28,7 +29,7 @@ func route(cmd *commander.CommandGroup, cfg config, callbacks *commander.Command
 	cmd.Command("/coredumped", news.CoreCmd)
 
 	cmd.Command("/help", help.HelpCmd)
-	cmd.Command("/start {data*}", help.Start)
+	cmd.Command("/start {data*}", verify.PrivateOnlyMiddleware(help.Start))
 
 	cmd.Command("/subscribe {feed?}", subscription.SubscribeCmd(cfg.db))
 	cmd.Command("/unsubscribe {feed?}", subscription.UnsubscribeCmd(cfg.db))
@@ -63,6 +64,9 @@ func route(cmd *commander.CommandGroup, cfg config, callbacks *commander.Command
 			janitor.ManagedOnlyMiddleware(janitor.Unban),
 		),
 	)
+
+	cmd.Command("/verificar", verify.PrivateOnlyMiddleware(verify.Cmd))
+	go verify.StartListening(&cfg)
 
 	// Callbacks
 	callbacks.Command("/gpag {grado} {offset:int}", guides.PaginateGradoCallback)
