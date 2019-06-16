@@ -26,6 +26,10 @@ func busStopCmd(ctx commander.Context) error {
 
 	arrives, err := getEstimatesForStop(stopid)
 
+	if err != nil {
+		return err
+	}
+
 	var sb strings.Builder
 
 	sb.WriteString("<b>Próximas Llegadas</b>\n")
