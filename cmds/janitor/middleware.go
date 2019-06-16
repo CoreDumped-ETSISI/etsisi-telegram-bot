@@ -38,6 +38,8 @@ func AdminOnlyMiddleware(next commander.Handler) commander.Handler {
 
 			chatid = update.CallbackQuery.Message.Chat.ID
 			userid = update.CallbackQuery.From.ID
+		} else {
+			return nil
 		}
 
 		m, err := bot.GetChatMember(tb.ChatConfigWithUser{
@@ -79,6 +81,8 @@ func ManagedOnlyMiddleware(next commander.Handler) commander.Handler {
 			}
 
 			chatid = update.CallbackQuery.Message.Chat.ID
+		} else {
+			return nil
 		}
 
 		state := ctx.Arg("state").(state.T)
