@@ -73,7 +73,7 @@ func (c *config) Mongo() *mgo.Session {
 	return c.db.DB
 }
 
-func (c *config) Bot() *tb.Bot {
+func (c *config) Bot() *tb.BotAPI {
 	return c.bot
 }
 

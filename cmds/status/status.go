@@ -5,13 +5,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/state"
+
 	tb "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/guad/commander"
 )
 
 func sendStatus(ctx commander.Context, infra bool) error {
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	update := ctx.Arg("update").(tb.Update)
+	update := ctx.Arg("update").(state.Update)
+	bot := update.State.Bot()
 
 	services, err := getStatus()
 

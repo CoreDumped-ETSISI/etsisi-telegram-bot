@@ -21,7 +21,7 @@ var (
 )
 
 func OnUpdate(ctx commander.Context) error {
-	update := ctx.Arg("update").(tb.Update)
+	update := ctx.Arg("update").(state.Update)
 
 	if update.Message != nil && update.Message.NewChatMembers != nil {
 		for _, m := range *update.Message.NewChatMembers {
@@ -33,15 +33,14 @@ func OnUpdate(ctx commander.Context) error {
 }
 
 func onChatJoin(ctx commander.Context, chat int64, member tb.User) error {
-	update := ctx.Arg("update").(tb.Update)
-	state := ctx.Arg("state").(state.T)
-	bot := ctx.Arg("bot").(*tb.BotAPI)
+	update := ctx.Arg("update").(state.Update)
+	bot := update.State.Bot()
 
-	if man, err := isChatManaged(state, chat); !man {
+	if man, err := isChatManaged(chat); !man {
 		return err
 	}
 
-	if !verify.IsUserVerified(state, member.ID) {
+	if !verify.IsUserVerified(member.ID) {
 		m := tb.NewMessage(chat, fmt.Sprintf("%v, para acceder a este chat, tienes que verificar tu cuenta de telegram.", member.String()))
 		btn := tb.NewInlineKeyboardButtonURL("Verificar ✅", "https://t.me/"+bot.Self.UserName+"?start=verifyme")
 
@@ -65,9 +64,8 @@ func onChatJoin(ctx commander.Context, chat int64, member tb.User) error {
 
 // Ban is a global ban across all chats where the administrator is admin.
 func Ban(ctx commander.Context) error {
-	update := ctx.Arg("update").(tb.Update)
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	state := ctx.Arg("state").(state.T)
+	update := ctx.Arg("update").(state.Update)
+	bot := update.State.Bot()
 
 	if update.Message.ReplyToMessage == nil {
 		m := tb.NewMessage(update.Message.Chat.ID, "Tienes que citar un mensaje de la persona a la que quieres banear.")
@@ -102,20 +100,19 @@ func Ban(ctx commander.Context) error {
 		AdminID: update.Message.From.ID,
 	}
 
-	go propagateBan(bot, state, ev, true)
+	go propagateBan(ev, true)
 
 	j, _ := json.Marshal(ev)
 
-	state.Redis().Publish("USER_BANNED", j)
+	update.State.Redis().Publish("USER_BANNED", j)
 
 	return nil
 }
 
 // Unban unbands someone across all chats where the sender is admin
 func Unban(ctx commander.Context) error {
-	update := ctx.Arg("update").(tb.Update)
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	state := ctx.Arg("state").(state.T)
+	update := ctx.Arg("update").(state.Update)
+	bot := update.State.Bot()
 
 	whoid := ctx.ArgInt("user")
 
@@ -140,33 +137,31 @@ func Unban(ctx commander.Context) error {
 		AdminID: update.Message.From.ID,
 	}
 
-	go propagateBan(bot, state, ev, false)
+	go propagateBan(ev, false)
 
 	j, _ := json.Marshal(ev)
 
-	state.Redis().Publish("USER_UNBANNED", j)
+	update.State.Redis().Publish("USER_UNBANNED", j)
 
 	return nil
 }
 
 func Manage(ctx commander.Context) error {
-	update := ctx.Arg("update").(tb.Update)
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	state := ctx.Arg("state").(state.T)
+	update := ctx.Arg("update").(state.Update)
 
-	managed, err := isChatManaged(state, update.Message.Chat.ID)
+	managed, err := isChatManaged(update.Message.Chat.ID)
 
 	if err != nil {
 		return err
 	}
 
 	if !managed {
-		err = manageChannel(bot, state, update.Message.Chat.ID, false)
+		err = manageChannel(update.Message.Chat.ID, false)
 
 		if err != nil {
 			if err == ErrBotNotAdmin {
 				m := tb.NewMessage(update.Message.Chat.ID, "El bot debe ser un administrador de este grupo.")
-				_, err = bot.Send(m)
+				_, err = update.State.Bot().Send(m)
 				return err
 			} else {
 				return err
@@ -174,7 +169,7 @@ func Manage(ctx commander.Context) error {
 		}
 
 		m := tb.NewMessage(update.Message.Chat.ID, "Este grupo ahora es moderado por mí 😈")
-		_, err = bot.Send(m)
+		_, err = update.State.Bot().Send(m)
 		return err
 	} else {
 		return showManagementMenu(ctx)
@@ -183,13 +178,12 @@ func Manage(ctx commander.Context) error {
 }
 
 func showManagementMenu(ctx commander.Context) error {
-	update := ctx.Arg("update").(tb.Update)
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	state := ctx.Arg("state").(state.T)
+	update := ctx.Arg("update").(state.Update)
+	bot := update.State.Bot()
 
 	chat := update.Message.Chat
 
-	sesh := state.Mongo().Clone()
+	sesh := update.State.Mongo().Clone()
 	defer sesh.Close()
 
 	col := sesh.DB("etsisi-telegram-bot").C("managed-channels")
@@ -224,7 +218,10 @@ func showManagementMenu(ctx commander.Context) error {
 	return err
 }
 
-func manageChannel(bot *tb.BotAPI, state state.T, chat int64, public bool) error {
+func manageChannel(chat int64, public bool) error {
+	state := state.G
+	bot := state.Bot()
+
 	me, err := bot.GetChatMember(tb.ChatConfigWithUser{
 		ChatID: chat,
 		UserID: bot.Self.ID,
@@ -278,7 +275,9 @@ func manageChannel(bot *tb.BotAPI, state state.T, chat int64, public bool) error
 	return col.Insert(man)
 }
 
-func unmanageChannel(bot *tb.BotAPI, state state.T, chat int64) error {
+func unmanageChannel(chat int64) error {
+	state := state.G
+
 	sesh := state.Mongo().Clone()
 	defer sesh.Close()
 
@@ -288,7 +287,10 @@ func unmanageChannel(bot *tb.BotAPI, state state.T, chat int64) error {
 }
 
 // If status is true, ban the user. Otherwise unban him.
-func propagateBan(bot *tb.BotAPI, state state.T, ban banEvent, status bool) error {
+func propagateBan(ban banEvent, status bool) error {
+	state := state.G
+	bot := state.Bot()
+
 	sesh := state.Mongo().Clone()
 	defer sesh.Close()
 
@@ -332,9 +334,7 @@ func propagateBan(bot *tb.BotAPI, state state.T, ban banEvent, status bool) erro
 // Callbacks
 // /jannyrefresh {chatid} {public}
 func RefreshCb(ctx commander.Context) error {
-	update := ctx.Arg("update").(tb.Update)
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	state := ctx.Arg("state").(state.T)
+	update := ctx.Arg("update").(state.Update)
 
 	chatraw := ctx.ArgString("chatid")
 	chatid, _ := strconv.ParseInt(chatraw, 10, 64)
@@ -342,10 +342,10 @@ func RefreshCb(ctx commander.Context) error {
 	pubraw := ctx.ArgString("public")
 	pub, _ := strconv.ParseBool(pubraw)
 
-	unmanageChannel(bot, state, chatid)
-	manageChannel(bot, state, chatid, pub)
+	unmanageChannel(chatid)
+	manageChannel(chatid, pub)
 
-	_, err := bot.AnswerCallbackQuery(tb.CallbackConfig{
+	_, err := update.State.Bot().AnswerCallbackQuery(tb.CallbackConfig{
 		CallbackQueryID: update.CallbackQuery.ID,
 		Text:            "Base de datos refrescada!",
 		ShowAlert:       false,
@@ -356,9 +356,7 @@ func RefreshCb(ctx commander.Context) error {
 
 // /janmnypublictoggle {chatid} {public}
 func TogglePublicCb(ctx commander.Context) error {
-	update := ctx.Arg("update").(tb.Update)
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	// state := ctx.Arg("state").(state.T)
+	update := ctx.Arg("update").(state.Update)
 
 	chatraw := ctx.ArgString("chatid")
 	chatid, _ := strconv.ParseInt(chatraw, 10, 64)
@@ -382,21 +380,20 @@ func TogglePublicCb(ctx commander.Context) error {
 
 	m := tb.NewEditMessageReplyMarkup(chatid, update.CallbackQuery.Message.MessageID, buttons)
 
-	_, err := bot.Send(m)
+	_, err := update.State.Bot().Send(m)
 
 	return err
 }
 
 // /jannydisable chatid
 func DisableCb(ctx commander.Context) error {
-	update := ctx.Arg("update").(tb.Update)
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	state := ctx.Arg("state").(state.T)
+	update := ctx.Arg("update").(state.Update)
+	bot := update.State.Bot()
 
 	chatraw := ctx.ArgString("chatid")
 	chatid, _ := strconv.ParseInt(chatraw, 10, 64)
 
-	err := unmanageChannel(bot, state, chatid)
+	err := unmanageChannel(chatid)
 
 	if err == nil {
 		m := tb.NewDeleteMessage(chatid, update.CallbackQuery.Message.MessageID)

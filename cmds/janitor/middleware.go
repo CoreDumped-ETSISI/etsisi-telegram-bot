@@ -15,8 +15,7 @@ var (
 
 func AdminOnlyMiddleware(next commander.Handler) commander.Handler {
 	return func(ctx commander.Context) error {
-		bot := ctx.Arg("bot").(*tb.BotAPI)
-		update := ctx.Arg("update").(tb.Update)
+		update := ctx.Arg("update").(state.Update)
 
 		var chatid int64
 		var userid int
@@ -42,7 +41,7 @@ func AdminOnlyMiddleware(next commander.Handler) commander.Handler {
 			return nil
 		}
 
-		m, err := bot.GetChatMember(tb.ChatConfigWithUser{
+		m, err := update.State.Bot().GetChatMember(tb.ChatConfigWithUser{
 			ChatID: chatid,
 			UserID: userid,
 		})
@@ -62,7 +61,7 @@ func AdminOnlyMiddleware(next commander.Handler) commander.Handler {
 
 func ManagedOnlyMiddleware(next commander.Handler) commander.Handler {
 	return func(ctx commander.Context) error {
-		update := ctx.Arg("update").(tb.Update)
+		update := ctx.Arg("update").(state.Update)
 
 		var chatid int64
 
@@ -85,9 +84,7 @@ func ManagedOnlyMiddleware(next commander.Handler) commander.Handler {
 			return nil
 		}
 
-		state := ctx.Arg("state").(state.T)
-
-		managed, err := isChatManaged(state, chatid)
+		managed, err := isChatManaged(chatid)
 
 		if err != nil {
 			return err

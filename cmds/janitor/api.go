@@ -2,7 +2,9 @@ package janitor
 
 import "github.com/CoreDumped-ETSISI/etsisi-telegram-bot/state"
 
-func isChatManaged(state state.T, chatid int64) (bool, error) {
+func isChatManaged(chatid int64) (bool, error) {
+	state := state.G
+
 	sesh := state.Mongo().Clone()
 	defer sesh.Close()
 

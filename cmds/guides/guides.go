@@ -5,13 +5,14 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/state"
+
 	tb "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/guad/commander"
 )
 
 func GuideCmd(ctx commander.Context) error {
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	update := ctx.Arg("update").(tb.Update)
+	update := ctx.Arg("update").(state.Update)
 
 	g, err := getAllGuides()
 
@@ -33,14 +34,13 @@ func GuideCmd(ctx commander.Context) error {
 
 	msg.ReplyMarkup = markup
 
-	_, err = bot.Send(msg)
+	_, err = update.State.Bot().Send(msg)
 
 	return err
 }
 
 func DownloadGuideCmd(ctx commander.Context) error {
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	update := ctx.Arg("update").(tb.Update)
+	update := ctx.Arg("update").(state.Update)
 	code := ctx.ArgString("code")
 
 	g, err := getAllGuides()
@@ -83,15 +83,14 @@ outlp:
 	msg.Caption = fmt.Sprintf("📘<b>%v</b>\nSemestre: %v\nTipo: %v\nCréditos: %v ECTS", guia.Name, guia.Semester, guia.Type, guia.ECTS)
 	msg.ParseMode = "html"
 
-	_, err = bot.Send(msg)
+	_, err = update.State.Bot().Send(msg)
 
 	return err
 }
 
 // Callback /gpag {grado} {offset}
 func PaginateGradoCallback(ctx commander.Context) error {
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	update := ctx.Arg("update").(tb.Update)
+	update := ctx.Arg("update").(state.Update)
 	grado := ctx.ArgString("grado")
 	offset := ctx.ArgInt("offset")
 
@@ -138,13 +137,13 @@ func PaginateGradoCallback(ctx commander.Context) error {
 
 	edit.ReplyMarkup = &markup
 
-	_, _ = bot.AnswerCallbackQuery(tb.CallbackConfig{
+	_, _ = update.State.Bot().AnswerCallbackQuery(tb.CallbackConfig{
 		CallbackQueryID: update.CallbackQuery.ID,
 		ShowAlert:       false,
 		Text:            "",
 	})
 
-	_, err = bot.Send(edit)
+	_, err = update.State.Bot().Send(edit)
 
 	return err
 }

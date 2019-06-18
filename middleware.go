@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/state"
 	tb "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/guad/commander"
 	log "github.com/sirupsen/logrus"
@@ -12,14 +13,13 @@ import (
 
 func (cfg config) ratelimitMiddleware(next commander.Handler) commander.Handler {
 	return func(ctx commander.Context) error {
-		bot := ctx.Arg("bot").(*tb.BotAPI)
-		update := ctx.Arg("update").(tb.Update)
+		update := ctx.Arg("update").(state.Update)
 
 		key := fmt.Sprintf("TIMEOUT_%v_%v", update.Message.Chat.ID, ctx.Name)
 		_, err := cfg.redis.Get(key).Result()
 
 		if err == nil { // Key was found
-			sendNag(bot, update.Message.Chat.ID)
+			sendNag(update.State.Bot(), update.Message.Chat.ID)
 			return nil
 		}
 
@@ -48,7 +48,7 @@ func sendNag(bot *tb.BotAPI, chatID int64) {
 
 func loggerMiddleware(next commander.Handler) commander.Handler {
 	return func(ctx commander.Context) error {
-		update := ctx.Arg("update").(tb.Update)
+		update := ctx.Arg("update").(state.Update)
 
 		pre := time.Now()
 
@@ -87,7 +87,7 @@ func loggerMiddleware(next commander.Handler) commander.Handler {
 
 func callbackLoggerMiddleware(next commander.Handler) commander.Handler {
 	return func(ctx commander.Context) error {
-		update := ctx.Arg("update").(tb.Update)
+		update := ctx.Arg("update").(state.Update)
 
 		pre := time.Now()
 

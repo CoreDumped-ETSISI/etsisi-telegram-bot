@@ -66,7 +66,7 @@ func route(cmd *commander.CommandGroup, cfg config, callbacks *commander.Command
 	)
 
 	cmd.Command("/verificar", verify.PrivateOnlyMiddleware(verify.Cmd))
-	go verify.StartListening(&cfg)
+	go verify.StartListening()
 
 	// Callbacks
 	callbacks.Command("/gpag {grado} {offset:int}", guides.PaginateGradoCallback)

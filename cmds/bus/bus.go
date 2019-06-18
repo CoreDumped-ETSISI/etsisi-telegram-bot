@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/state"
+
 	tb "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/guad/commander"
 )
@@ -19,8 +21,7 @@ func BusCmd(ctx commander.Context) error {
 }
 
 func busStopCmd(ctx commander.Context) error {
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	update := ctx.Arg("update").(tb.Update)
+	update := ctx.Arg("update").(state.Update)
 
 	stopid := ctx.ArgInt("stop")
 
@@ -45,17 +46,16 @@ func busStopCmd(ctx commander.Context) error {
 
 	msg := tb.NewMessage(update.Message.Chat.ID, sb.String())
 	msg.ParseMode = "html"
-	_, err = bot.Send(msg)
+	_, err = update.State.Bot().Send(msg)
 	return err
 }
 
 func uniBusCmd(ctx commander.Context) error {
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	update := ctx.Arg("update").(tb.Update)
+	update := ctx.Arg("update").(state.Update)
 
 	loadingMsg := tb.NewMessage(update.Message.Chat.ID, "Cargando ⏰")
 	loadingMsg.ParseMode = "html"
-	lmsg, err := bot.Send(loadingMsg)
+	lmsg, err := update.State.Bot().Send(loadingMsg)
 
 	if err != nil {
 		return err
@@ -65,7 +65,7 @@ func uniBusCmd(ctx commander.Context) error {
 
 	if err != nil {
 		m := tb.NewEditMessageText(update.Message.Chat.ID, lmsg.MessageID, "Algo salió mal 💀")
-		_, _ = bot.Send(m)
+		_, _ = update.State.Bot().Send(m)
 
 		return err
 	}
@@ -101,6 +101,6 @@ func uniBusCmd(ctx commander.Context) error {
 
 	msg := tb.NewEditMessageText(update.Message.Chat.ID, lmsg.MessageID, sb.String())
 	msg.ParseMode = "html"
-	_, err = bot.Send(msg)
+	_, err = update.State.Bot().Send(msg)
 	return err
 }

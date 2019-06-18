@@ -10,17 +10,16 @@ import (
 )
 
 func Cmd(ctx commander.Context) error {
-	update := ctx.Arg("update").(tb.Update)
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	state := ctx.Arg("state").(state.T)
+	update := ctx.Arg("update").(state.Update)
+	bot := update.State.Bot()
 
-	if IsUserVerified(state, update.Message.From.ID) {
+	if IsUserVerified(update.Message.From.ID) {
 		m := tb.NewMessage(update.Message.Chat.ID, "Ya estás verificado!")
 		_, err := bot.Send(m)
 		return err
 	}
 
-	token, err := startNewVerification(state, update.Message.From.ID)
+	token, err := startNewVerification(update.Message.From.ID)
 
 	if err != nil {
 		return err
@@ -34,7 +33,9 @@ func Cmd(ctx commander.Context) error {
 	return err
 }
 
-func StartListening(state state.T) {
+func StartListening() {
+	state := state.G
+
 	pubsub := state.Redis().Subscribe("USER_VERIFIED")
 
 	ch := pubsub.Channel()
@@ -48,19 +49,19 @@ func StartListening(state state.T) {
 			continue
 		}
 
-		err = verifyUser(state, data.UserID)
+		err = verifyUser(data.UserID)
 
 		if err != nil {
 			log.WithError(err).WithField("userid", data.UserID).Error("Error verifying user")
 			continue
 		}
 
-		sendVerifiedMessage(state, data.UserID)
+		sendVerifiedMessage(data.UserID)
 	}
 }
 
-func sendVerifiedMessage(state state.T, userid int) {
+func sendVerifiedMessage(userid int) {
 	// TODO: comando /grupos
 	m := tb.NewMessage(int64(userid), "Gracias por verificar tu cuenta! Ya puedes entrar en grupos protegidos. Puedes ver que grupos están disponibles usando el comando /grupos")
-	_, _ = state.Bot().Send(m)
+	_, _ = state.G.Bot().Send(m)
 }

@@ -7,13 +7,15 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/state"
+
 	tb "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/guad/commander"
 )
 
 func TtsCmd(ctx commander.Context) error {
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	update := ctx.Arg("update").(tb.Update)
+	update := ctx.Arg("update").(state.Update)
+	bot := update.State.Bot()
 
 	msg := update.Message
 

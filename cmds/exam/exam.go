@@ -14,7 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func getUserGrupo(redis *redis.Client, update tb.Update) string {
+func getUserGrupo(redis *redis.Client, update state.Update) string {
 	grp, err := redis.Get(fmt.Sprintf("FAVORITE_GROUP_%v", update.Message.From.ID)).Result()
 
 	if err != nil {
@@ -79,11 +79,10 @@ func getTagsForGroup(grp string) [][]string {
 }
 
 func ExamCmd(ctx commander.Context) error {
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	update := ctx.Arg("update").(tb.Update)
-	state := ctx.Arg("state").(state.T)
+	update := ctx.Arg("update").(state.Update)
+	bot := update.State.Bot()
 
-	ug := getUserGrupo(state.Redis(), update)
+	ug := getUserGrupo(update.State.Redis(), update)
 
 	if ug != "" {
 		tags := getTagsForGroup(ug)
@@ -115,8 +114,7 @@ func ExamCmd(ctx commander.Context) error {
 
 // /exyear {grado}
 func SelectYearCb(ctx commander.Context) error {
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	update := ctx.Arg("update").(tb.Update)
+	update := ctx.Arg("update").(state.Update)
 
 	grado := ctx.ArgString("grado")
 
@@ -134,15 +132,14 @@ func SelectYearCb(ctx commander.Context) error {
 
 	msg.ReplyMarkup = &markup
 
-	_, err := bot.Send(msg)
+	_, err := update.State.Bot().Send(msg)
 
 	return err
 }
 
 // /exshow {grado} {curso:int}
 func ShowExamsCb(ctx commander.Context) error {
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	update := ctx.Arg("update").(tb.Update)
+	update := ctx.Arg("update").(state.Update)
 
 	grado := ctx.ArgString("grado")
 	curso := ctx.ArgInt("curso")
@@ -190,11 +187,11 @@ func ShowExamsCb(ctx commander.Context) error {
 	if params != nil {
 		msg := tb.NewMessage(update.Message.Chat.ID, sb.String())
 		msg.ParseMode = "html"
-		_, err = bot.Send(msg)
+		_, err = update.State.Bot().Send(msg)
 	} else {
 		msg := tb.NewEditMessageText(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Message.MessageID, sb.String())
 		msg.ParseMode = "html"
-		_, err = bot.Send(msg)
+		_, err = update.State.Bot().Send(msg)
 	}
 
 	return err

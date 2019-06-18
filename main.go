@@ -20,11 +20,7 @@ func main() {
 	cmd := commander.New()
 	callbacks := commander.New()
 
-	me, err := bot.GetMe()
-
-	if err != nil {
-		panic(err)
-	}
+	me := bot.Self
 
 	cmd.Preprocessor = &CustomTelegramPreprocessor{
 		BotName: me.UserName,
@@ -34,16 +30,19 @@ func main() {
 	use(cmd, config)
 	callbacks.Use(callbackLoggerMiddleware)
 
+	state.G = &config
+
 	for update := range updates {
-		go handleUpdate(&config, bot, update, cmd, callbacks)
+		go handleUpdate(bot, update, cmd, callbacks)
 	}
 }
 
-func handleUpdate(state state.T, bot *tb.BotAPI, update tb.Update, cmd *commander.CommandGroup, callbacks *commander.CommandGroup) {
+func handleUpdate(bot *tb.BotAPI, update tb.Update, cmd *commander.CommandGroup, callbacks *commander.CommandGroup) {
 	ctx := map[string]interface{}{
-		"bot":    bot,
-		"update": update,
-		"state":  state,
+		"update": state.Update{
+			Update: update,
+			State:  state.G,
+		},
 	}
 
 	if update.Message != nil && update.Message.Text != "" {

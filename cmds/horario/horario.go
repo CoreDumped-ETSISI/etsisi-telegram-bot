@@ -18,21 +18,19 @@ import (
 )
 
 func HorarioCmd(ctx commander.Context) error {
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	update := ctx.Arg("update").(tb.Update)
-	state := ctx.Arg("state").(state.T)
+	update := ctx.Arg("update").(state.Update)
 
 	grupo := ctx.ArgString("grupo")
 	oldfav := false
 
 	if grupo == "" {
-		grp, err := state.Redis().Get(fmt.Sprintf("FAVORITE_GROUP_%v", update.Message.From.ID)).Result()
+		grp, err := update.State.Redis().Get(fmt.Sprintf("FAVORITE_GROUP_%v", update.Message.From.ID)).Result()
 
 		if err != nil {
 			// Has no favorite group and didn't provide a group.
 			msg := tb.NewMessage(update.Message.Chat.ID, "No tienes un grupo favorito. Especifica tu grupo con /horario (GRUPO)")
 			msg.ReplyToMessageID = update.Message.MessageID
-			bot.Send(msg)
+			update.State.Bot().Send(msg)
 			return nil
 		}
 
@@ -46,7 +44,7 @@ func HorarioCmd(ctx commander.Context) error {
 		if err == NoSuchGroupError {
 			msg := tb.NewMessage(update.Message.Chat.ID, "Ese grupo no existe")
 			msg.ReplyToMessageID = update.Message.MessageID
-			bot.Send(msg)
+			update.State.Bot().Send(msg)
 			return nil
 		}
 
@@ -54,7 +52,7 @@ func HorarioCmd(ctx commander.Context) error {
 	}
 
 	if !oldfav {
-		err = state.Redis().Set(fmt.Sprintf("FAVORITE_GROUP_%v", update.Message.From.ID), grupo, 0).Err()
+		err = update.State.Redis().Set(fmt.Sprintf("FAVORITE_GROUP_%v", update.Message.From.ID), grupo, 0).Err()
 
 		if err != nil {
 			log.WithError(err).WithFields(log.Fields{
@@ -72,7 +70,7 @@ func HorarioCmd(ctx commander.Context) error {
 	if now >= len(horario) || len(horario[now]) == 0 {
 		msg := tb.NewMessage(update.Message.Chat.ID, "Hoy no tienes clase")
 		msg.ReplyToMessageID = update.Message.MessageID
-		bot.Send(msg)
+		update.State.Bot().Send(msg)
 		return nil
 	}
 
@@ -89,21 +87,20 @@ func HorarioCmd(ctx commander.Context) error {
 	}
 
 	msg := tb.NewMessage(update.Message.Chat.ID, sb.String())
-	_, err = bot.Send(msg)
+	_, err = update.State.Bot().Send(msg)
 
 	return err
 }
 
 func HorarioWeekCmd(ctx commander.Context) error {
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	update := ctx.Arg("update").(tb.Update)
-	state := ctx.Arg("state").(state.T)
+	update := ctx.Arg("update").(state.Update)
+	bot := update.State.Bot()
 
 	grupo := ctx.ArgString("grupo")
 	oldfav := false
 
 	if grupo == "" {
-		grp, err := state.Redis().Get(fmt.Sprintf("FAVORITE_GROUP_%v", update.Message.From.ID)).Result()
+		grp, err := update.State.Redis().Get(fmt.Sprintf("FAVORITE_GROUP_%v", update.Message.From.ID)).Result()
 
 		if err != nil {
 			// Has no favorite group and didn't provide a group.
@@ -131,7 +128,7 @@ func HorarioWeekCmd(ctx commander.Context) error {
 	}
 
 	if !oldfav {
-		err = state.Redis().Set(fmt.Sprintf("FAVORITE_GROUP_%v", update.Message.From.ID), grupo, 0).Err()
+		err = update.State.Redis().Set(fmt.Sprintf("FAVORITE_GROUP_%v", update.Message.From.ID), grupo, 0).Err()
 
 		if err != nil {
 			log.WithError(err).WithFields(log.Fields{

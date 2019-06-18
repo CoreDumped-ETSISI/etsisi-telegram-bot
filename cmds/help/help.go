@@ -2,6 +2,7 @@ package help
 
 import (
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/verify"
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/state"
 	tb "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/guad/commander"
 )
@@ -22,8 +23,7 @@ func Start(ctx commander.Context) error {
 }
 
 func HelpCmd(ctx commander.Context) error {
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	update := ctx.Arg("update").(tb.Update)
+	update := ctx.Arg("update").(state.Update)
 
 	text := `Comandos disponibles:
 
@@ -47,7 +47,7 @@ func HelpCmd(ctx commander.Context) error {
 	msg := tb.NewMessage(update.Message.Chat.ID, text)
 	msg.ParseMode = "markdown"
 
-	_, err := bot.Send(msg)
+	_, err := update.State.Bot().Send(msg)
 
 	return err
 }

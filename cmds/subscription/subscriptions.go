@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/state"
+
 	"github.com/go-redis/redis"
 	tb "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/guad/commander"
@@ -13,8 +15,8 @@ import (
 
 func SubscribeCmd(s *DBContext) func(commander.Context) error {
 	return func(ctx commander.Context) error {
-		bot := ctx.Arg("bot").(*tb.BotAPI)
-		update := ctx.Arg("update").(tb.Update)
+		update := ctx.Arg("update").(state.Update)
+		bot := update.State.Bot()
 		feed := ctx.ArgString("feed")
 
 		chatid := update.Message.Chat.ID
@@ -56,8 +58,8 @@ func SubscribeCmd(s *DBContext) func(commander.Context) error {
 
 func UnsubscribeCmd(s *DBContext) func(commander.Context) error {
 	return func(ctx commander.Context) error {
-		bot := ctx.Arg("bot").(*tb.BotAPI)
-		update := ctx.Arg("update").(tb.Update)
+		update := ctx.Arg("update").(state.Update)
+		bot := update.State.Bot()
 		feed := ctx.ArgString("feed")
 
 		chatid := update.Message.Chat.ID
@@ -189,8 +191,8 @@ func StartMonitoringSubscriptions(redis *redis.Client, bot *tb.BotAPI, s *DBCont
 }
 
 func GetAllChannelsCommand(ctx commander.Context) error {
-	bot := ctx.Arg("bot").(*tb.BotAPI)
-	update := ctx.Arg("update").(tb.Update)
+	update := ctx.Arg("update").(state.Update)
+	bot := update.State.Bot()
 
 	var sb strings.Builder
 

@@ -7,8 +7,8 @@ import (
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/state"
 )
 
-func IsUserVerified(state state.T, userid int) bool {
-	sesh := state.Mongo().Clone()
+func IsUserVerified(userid int) bool {
+	sesh := state.G.Mongo().Clone()
 	defer sesh.Close()
 
 	col := sesh.DB("etsisi-telegram-bot").C("verified-users")
@@ -19,7 +19,7 @@ func IsUserVerified(state state.T, userid int) bool {
 	return err == nil
 }
 
-func startNewVerification(state state.T, userid int) (string, error) {
+func startNewVerification(userid int) (string, error) {
 	// Generate random session ID
 	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 	n := 32
@@ -29,7 +29,7 @@ func startNewVerification(state state.T, userid int) (string, error) {
 	}
 	token := string(b)
 
-	err := state.Redis().Set("VERIFY_SESS_"+token, userid, 30*time.Minute).Err()
+	err := state.G.Redis().Set("VERIFY_SESS_"+token, userid, 30*time.Minute).Err()
 
 	if err != nil {
 		return "", nil
@@ -43,8 +43,8 @@ func buildVerificationURL(token string) string {
 	return ""
 }
 
-func verifyUser(state state.T, userid int) error {
-	sesh := state.Mongo().Clone()
+func verifyUser(userid int) error {
+	sesh := state.G.Mongo().Clone()
 	defer sesh.Close()
 
 	col := sesh.DB("etsisi-telegram-bot").C("verified-users")
