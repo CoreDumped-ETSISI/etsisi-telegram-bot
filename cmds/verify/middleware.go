@@ -25,7 +25,7 @@ func PrivateOnlyMiddleware(next commander.Handler) commander.Handler {
 			// Callbacks
 			msg = update.CallbackQuery.Message
 		} else {
-			return nil
+			return ErrNotPrivateChat
 		}
 
 		if !msg.Chat.IsPrivate() {

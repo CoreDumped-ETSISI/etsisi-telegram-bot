@@ -165,8 +165,12 @@ func ShowExamsCb(ctx commander.Context) error {
 		}
 	}
 
-	// TODO: Dont hardcode this
-	extraordinaria := time.Date(2019, time.June, 17, 0, 0, 0, 0, time.Local)
+	year := time.Now().Year()
+	if time.Now().Month() >= time.August {
+		year++
+	}
+
+	extraordinaria := time.Date(year, time.June, 17, 0, 0, 0, 0, time.Local)
 
 	if time.Now().After(extraordinaria) {
 		ex = filterByDate(ex, time.Now(), time.Now().AddDate(1, 0, 0))
