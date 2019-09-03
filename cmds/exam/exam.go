@@ -165,18 +165,19 @@ func ShowExamsCb(ctx commander.Context) error {
 		}
 	}
 
-	year := time.Now().Year()
-	if time.Now().Month() >= time.August {
-		year++
-	}
+	var limit time.Time
 
-	extraordinaria := time.Date(year, time.June, 17, 0, 0, 0, 0, time.Local)
-
-	if time.Now().After(extraordinaria) {
-		ex = filterByDate(ex, time.Now(), time.Now().AddDate(1, 0, 0))
+	if time.Now().Month() >= time.August || time.Now().Month() <= time.January {
+		yr := time.Now().Year() + 1
+		if time.Now().Month() == time.January {
+			yr--
+		}
+		limit = time.Date(yr, time.January, 30, 0, 0, 0, 0, time.Local)
 	} else {
-		ex = filterByDate(ex, time.Now(), extraordinaria)
+		limit = time.Date(time.Now().Year(), time.June, 17, 0, 0, 0, 0, time.Local)
 	}
+
+	ex = filterByDate(ex, time.Now(), limit)
 
 	var sb strings.Builder
 
