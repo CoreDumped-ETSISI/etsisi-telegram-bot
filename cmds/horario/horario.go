@@ -17,10 +17,18 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// A lot of people misinterpret instructions
+// and do e.g. /horario (GM11) instead of
+// /horario GM11
+func cleanGroupArg(grp string) string {
+	return strings.Trim(grp, "()")
+}
+
 func HorarioCmd(ctx commander.Context) error {
 	update := ctx.Arg("update").(state.Update)
 
 	grupo := ctx.ArgString("grupo")
+	grupo = cleanGroupArg(grupo)
 	oldfav := false
 
 	if grupo == "" {
@@ -97,6 +105,7 @@ func HorarioWeekCmd(ctx commander.Context) error {
 	bot := update.State.Bot()
 
 	grupo := ctx.ArgString("grupo")
+	grupo = cleanGroupArg(grupo)
 	oldfav := false
 
 	if grupo == "" {
