@@ -10,8 +10,6 @@ import (
 
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/state"
 
-	"github.com/olekukonko/tablewriter"
-
 	tb "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/guad/commander"
 	log "github.com/sirupsen/logrus"
