@@ -147,78 +147,29 @@ func HorarioWeekCmd(ctx commander.Context) error {
 		}
 	}
 
-	// ASCII tables don't fit in group conversations.
-	if !update.Message.Chat.IsPrivate() {
-		var buf bytes.Buffer
-		err = json.NewEncoder(&buf).Encode(horario)
-
-		img, err := http.Post("https://renderer.kolhos.chichasov.es/api/horario", "application/json", &buf)
-
-		if err != nil {
-			return err
-		}
-
-		defer img.Body.Close()
-
-		file := tb.FileReader{
-			Name:   "horario.png",
-			Size:   -1,
-			Reader: img.Body,
-		}
-
-		msg := tb.NewPhotoUpload(update.Message.Chat.ID, file)
-		msg.Caption = "Horario de " + strings.ToUpper(grupo)
-		_, err = bot.Send(msg)
-		return err
-	} else {
-		tableHeader := []string{"⌚", "M", "X", "J", "V"}
-		tableData := [][]string{}
-		hasRow := []bool{}
-
-		// Generate table
-		for i := 9; i <= 20; i++ {
-			tableData = append(tableData, []string{fmt.Sprintf("%v", i), "", "", "", ""})
-			hasRow = append(hasRow, false)
-		}
-
-		// Populate table
-		// Start without monday or it won't fit on mobile
-		for day := 1; day < len(horario); day++ {
-			for _, clase := range horario[day] {
-				for i := clase.Start; i < clase.End; i++ {
-					tableData[i-9][day] = clase.Name
-					hasRow[i-9] = true
-				}
-			}
-		}
-
-		// Expunge all rows without data
-		for i := len(hasRow) - 1; i >= 0; i-- {
-			if !hasRow[i] {
-				copy(tableData[i:], tableData[i+1:])
-				tableData[len(tableData)-1] = nil
-				tableData = tableData[:len(tableData)-1]
-			}
-		}
-
-		var sb strings.Builder
-		sb.WriteString("<pre>\n")
-		table := tablewriter.NewWriter(&sb)
-
-		table.SetHeader(tableHeader)
-		table.SetAutoMergeCells(true)
-		table.SetRowLine(true)
-		table.AppendBulk(tableData)
-		table.SetCaption(true, fmt.Sprintf("Horario de %v", strings.ToUpper(grupo)))
-
-		table.Render()
-
-		sb.WriteString("</pre>")
-
-		msg := tb.NewMessage(update.Message.Chat.ID, sb.String())
-		msg.ParseMode = "html"
-		_, err = bot.Send(msg)
-
+	var buf bytes.Buffer
+	err = json.NewEncoder(&buf).Encode(horario)
+	
+	if err != nil {
 		return err
 	}
+
+	img, err := http.Post("https://renderer.kolhos.chichasov.es/api/horario", "application/json", &buf)
+
+	if err != nil {
+		return err
+	}
+
+	defer img.Body.Close()
+
+	file := tb.FileReader{
+		Name:   "horario.png",
+		Size:   -1,
+		Reader: img.Body,
+	}
+
+	msg := tb.NewPhotoUpload(update.Message.Chat.ID, file)
+	msg.Caption = "Horario de " + strings.ToUpper(grupo)
+	_, err = bot.Send(msg)
+	return err
 }
