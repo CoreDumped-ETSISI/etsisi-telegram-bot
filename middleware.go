@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/janitor"
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/state"
 	tb "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/guad/commander"
@@ -114,7 +115,24 @@ func callbackLoggerMiddleware(next commander.Handler) commander.Handler {
 	}
 }
 
+func errorResponseMiddleware(next commander.Handler) commander.Handler {
+	return func(ctx commander.Context) error {
+		err := next(ctx)
+		update := ctx.Arg("update").(state.Update)
+		bot := state.G.Bot()
+
+		if err == janitor.ErrNotAnAdmin {
+			m := tb.NewMessage(update.Message.Chat.ID, "Debes ser un administrador de este grupo!")
+			m.ReplyToMessageID = update.Message.MessageID
+			_, _ = bot.Send(m)
+		}
+
+		return err
+	}
+}
+
 func use(cmd *commander.CommandGroup, cfg config) {
 	cmd.Use(loggerMiddleware)
 	cmd.Use(cfg.ratelimitMiddleware)
+	cmd.Use(errorResponseMiddleware)
 }
