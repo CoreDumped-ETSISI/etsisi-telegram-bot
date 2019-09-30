@@ -10,16 +10,12 @@ import (
 func Start(ctx commander.Context) error {
 	data := ctx.Arg("data")
 
-	if data == "" {
-		return HelpCmd(ctx)
-	}
-
 	switch data {
 	case "verifyme":
 		return verify.Cmd(ctx)
+	default:
+		return HelpCmd(ctx)
 	}
-
-	return nil
 }
 
 func HelpCmd(ctx commander.Context) error {
