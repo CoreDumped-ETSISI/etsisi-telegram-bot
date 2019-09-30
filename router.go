@@ -31,8 +31,8 @@ func route(cmd *commander.CommandGroup, cfg config, callbacks *commander.Command
 	cmd.Command("/help", help.HelpCmd)
 	cmd.Command("/start {data*}", verify.PrivateOnlyMiddleware(help.Start))
 
-	cmd.Command("/subscribe {feed?}", subscription.SubscribeCmd(cfg.db))
-	cmd.Command("/unsubscribe {feed?}", subscription.UnsubscribeCmd(cfg.db))
+	cmd.Command("/subscribe {feed?}", janitor.AdminOnlyMiddleware(subscription.SubscribeCmd(cfg.db)))
+	cmd.Command("/unsubscribe {feed?}", janitor.AdminOnlyMiddleware(subscription.UnsubscribeCmd(cfg.db)))
 	cmd.Command("/canales", subscription.GetAllChannelsCommand)
 
 	go subscription.StartMonitoringSubscriptions(cfg.redis, cfg.bot, cfg.db)
