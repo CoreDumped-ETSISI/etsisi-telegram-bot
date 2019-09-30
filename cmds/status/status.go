@@ -50,7 +50,7 @@ func sendStatus(ctx commander.Context, infra bool) error {
 		sb.WriteString(")\n")
 	}
 
-	button := tb.NewInlineKeyboardButtonURL("Historial", "https://status.kolhos.chichasov.es/")
+	button := tb.NewInlineKeyboardButtonURL("Más Info", "https://status.kolhos.chichasov.es/")
 	markup := tb.NewInlineKeyboardMarkup([]tb.InlineKeyboardButton{button})
 
 	msg := tb.NewMessage(update.Message.Chat.ID, sb.String())
