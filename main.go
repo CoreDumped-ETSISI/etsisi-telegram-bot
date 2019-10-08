@@ -12,6 +12,12 @@ func main() {
 	config := newConfig()
 
 	log.SetLevel(log.AllLevels[config.logLevel])
+	log.SetFormatter(&log.JSONFormatter{
+		FieldMap: log.FieldMap{
+			log.FieldKeyLevel: "level_name",
+			log.FieldKeyMsg:   "message",
+		},
+	})
 
 	bot, updates := startBot()
 
