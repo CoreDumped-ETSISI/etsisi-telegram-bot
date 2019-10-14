@@ -21,7 +21,8 @@ import (
 // Note that underscores (_) are forbidden for command names.
 func route(cmd *commander.CommandGroup, cfg config, callbacks *commander.CommandGroup) {
 	cmd.Command("/menu", menu.CafeTodayCmd)
-	cmd.Command("/menu_mañana", menu.CafeTomorrowCmd)
+	cmd.Command("/menu2", menu.CafeTomorrowCmd)
+	cmd.Command("/menumañana", menu.CafeTomorrowCmd)
 	cmd.Command("/salas", salas.SalasCmd)
 	cmd.Command("/noticias", news.NewsCmd)
 	cmd.Command("/avisos", news.AvisosCmd)

@@ -25,6 +25,7 @@ func HelpCmd(ctx commander.Context) error {
 
 /menu - Menú de la cafetería de hoy.
 /menu2 - Menú de la cafetería de mañana.
+/menumañana - Menú de la cafetería de mañana.
 /salas - Disponibilidad de salas de trabajo de la biblioteca.
 /noticias - Noticias generales de ETSISI.
 /avisos - Avisos para los alumnos.
