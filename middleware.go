@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/cmds/stub"
 	"math/rand"
 	"time"
 
@@ -135,4 +136,5 @@ func use(cmd *commander.CommandGroup, cfg config) {
 	cmd.Use(loggerMiddleware)
 	cmd.Use(cfg.ratelimitMiddleware)
 	cmd.Use(errorResponseMiddleware)
+	cmd.Use(stub.DynamicMiddleware())
 }

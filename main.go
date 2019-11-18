@@ -22,6 +22,7 @@ func main() {
 	bot, updates := startBot()
 
 	config.bot = bot
+	state.G = &config
 
 	cmd := commander.New()
 	callbacks := commander.New()
@@ -35,8 +36,6 @@ func main() {
 	route(cmd, config, callbacks)
 	use(cmd, config)
 	callbacks.Use(callbackLoggerMiddleware)
-
-	state.G = &config
 
 	for update := range updates {
 		go handleUpdate(bot, update, cmd, callbacks)

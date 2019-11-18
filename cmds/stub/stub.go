@@ -6,10 +6,10 @@ import (
 	"github.com/guad/commander"
 )
 
-func Cmd(ctx commander.Context) error {
+func Cmd(ctx commander.Context, message string) error {
 	update := ctx.Arg("update").(state.Update)
 
-	msg := tb.NewMessage(update.Message.Chat.ID, "Este comando ha sido temporalmente desactivado.")
+	msg := tb.NewMessage(update.Message.Chat.ID, message)
 	update.State.Bot().Send(msg)
 
 	return nil
