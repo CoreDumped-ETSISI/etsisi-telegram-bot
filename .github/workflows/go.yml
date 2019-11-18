@@ -5,7 +5,6 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-
     - name: Set up Go 1.13
       uses: actions/setup-go@v1
       with:
@@ -22,6 +21,18 @@ jobs:
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
         fi
-
     - name: Build
-      run: go build -v .
+      run: go build -v . -o etsisi-telegram-bot
+    - name: Upload
+      uses: actions/upload-artifact@v1
+      with:
+        name: binary
+        path: etsisi-telegram-bot
+  upload:
+    name: Docker
+    if: github.event == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build the Docker image
+        run: docker build . --tag etsisi-telegram-bot:$(date +%s)        
