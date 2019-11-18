@@ -1,37 +1,52 @@
 package main
 
 import (
-	"fmt"
+	"strings"
 
 	tb "github.com/go-telegram-bot-api/telegram-bot-api"
 )
+
+func filterEmpty(s []string) []string {
+	out := make([]string, 0, len(s))
+
+	for i := range s {
+		if s[i] != "" {
+			out = append(out, s[i])
+		}
+	}
+
+	return out
+}
 
 func getChatTitle(msg *tb.Message) string {
 	chatTitle := msg.Chat.Title
 
 	if chatTitle == "" {
-		chatTitle = fmt.Sprint(msg.Chat.FirstName, msg.Chat.LastName)
+		chatTitle = strings.Join(filterEmpty(
+			[]string{
+				msg.Chat.FirstName,
+				msg.Chat.LastName,
+			}), " ")
 	}
 
 	return chatTitle
 }
 
 func getSenderName(sender *tb.User) string {
-	if sender.FirstName == "" && sender.LastName == "" {
+	parts := []string{
+		sender.FirstName,
+		sender.LastName,
+	}
+
+	parts = filterEmpty(parts)
+
+	if len(parts) == 0 {
 		return sender.UserName
 	}
 
-	name := sender.FirstName
-
-	if sender.FirstName == "" {
-		name = sender.LastName
-	} else if sender.LastName != "" {
-		name += " " + sender.LastName
-	}
-
 	if sender.UserName != "" {
-		name = fmt.Sprintf("%v (%v)", name, sender.UserName)
+		parts = append(parts, "(" + sender.UserName + ")")
 	}
 
-	return name
+	return strings.Join(parts, " ")
 }
