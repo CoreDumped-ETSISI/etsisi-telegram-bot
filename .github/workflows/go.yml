@@ -22,7 +22,7 @@ jobs:
             dep ensure
         fi
     - name: Build
-      run: go build -v . -o etsisi-telegram-bot
+      run: go build -v -o etsisi-telegram-bot .
     - name: Upload
       uses: actions/upload-artifact@v1
       with:
