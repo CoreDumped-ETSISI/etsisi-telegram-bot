@@ -1,0 +1,89 @@
+version: '3'
+
+services:
+    bot:
+        image: guad/etsisi-telegram-bot:prod
+        environment:
+            TELEGRAM_API_KEY: '<replaceme>'
+            MESSAGE_TIMEOUT: 5s
+            LOG_LEVEL: 4
+            REDIS_HOST: 'redis:6379'
+            REDIS_PASS: '<replaceme>'
+            REDIS_DB: 0
+            DB_HOST: mongodb
+            DB_NAME: ''
+            DB_USER: root
+            DB_PASS: '<replaceme>'
+            TTS_API_KEY: '<replaceme>' 
+        depends_on:
+            - redis
+            - mongodb
+    redis:
+        image: bitnami/redis:latest
+        environment:
+            ALLOW_EMPTY_PASSWORD: 'no'
+            REDIS_PASSWORD: '<replaceme>'
+        volumes:
+            - redis_data:/bitnami/redis/data
+    mongodb:
+        image: bitnami/mongodb:latest
+        environment: 
+            ALLOW_EMPTY_PASSWORD: 'no'
+            MONGODB_ROOT_PASSWORD: '<replaceme>'
+        volumes:
+            - mongodb_data:/bitnami
+    bibliosalas:
+        image: guad/bibliosalas:latest
+        environment:
+            GOOGLE_API_KEY: '<replaceme>'
+            SHEET_ID: '15IvLTwQUGrJzqeD5veC38_bqnZ5uJGapzEWodyh4xIM'
+            SHEET_RANGE: 'B2:F23'
+            CACHE_UPDATE_INTERVAL: 900
+    cafetapi:
+        image: guad/cafetapi:latest
+        environment:
+            PDF_TABLE_SERVER: pdftableapi
+        depends_on: 
+            - pdftableapi
+    pdftableapi:
+        image: guad/pdftableapi:latest
+    emt:
+        image: guad/emt:latest
+        environment:
+            EMT_IDCLIENT: '<replaceme>'
+            EMT_PASSKEY: '<replaceme>'
+    examenes:
+        image: guad/examenes:latest
+        environment:
+            PDFTABLE_SERVER: 'pdftableapi:8080/table'
+    guias:
+        image: guad/guias:latest
+    horarios:
+        image: guad/horarios:latest
+    menunotifier:
+        image: guad/menunotifier:latest
+        environment: 
+            SLEEP_INTERVAL: 900
+            REDIS_HOST: redis
+            REDIS_PASS: '<replaceme>'
+    uninews:
+        image: guad/uninews:latest
+        environment: 
+            REDIS_HOST: redis
+            REDIS_DB: 0
+            REDIS_PASS: '<replaceme>'
+    renderer:
+        image: guad/renderer:latest
+    unistatus:
+        image: guad/unistatus:latest
+        environment: 
+            REDIS_HOST: 'redis:6379'
+            REDIS_DB: 0
+            REDIS_PASS: '<replaceme>'
+            CIRCUIT_BREAK_LIMIT: 3
+            CHECK_INTERVAL: '0 */3 * * * *'
+            STATUS_ENDPOINTS_BASE64: 'W3sibmFtZSI6Ik1vb2RsZSBVUE0iLCJ1cmwiOiJodHRwczovL21vb2RsZS51cG0uZXMvdGl0dWxhY2lvbmVzL29maWNpYWxlcy9sb2dpbi9sb2dpbi5waHAiLCJpbmZyYSI6ZmFsc2V9LHsibmFtZSI6IldlYiBFVFNJU0kgVVBNIiwidXJsIjoiaHR0cHM6Ly93d3cuZXRzaXNpLnVwbS5lcy8iLCJpbmZyYSI6ZmFsc2V9LHsibmFtZSI6IldlYiBVUE0iLCJ1cmwiOiJodHRwczovL3d3dy51cG0uZXMvIiwiaW5mcmEiOmZhbHNlfSx7Im5hbWUiOiJQb2xpdMOpY25pY2EgVmlydHVhbCIsInVybCI6Imh0dHBzOi8vd3d3LnVwbS5lcy9wb2xpdGVjbmljYV92aXJ0dWFsLyIsImluZnJhIjpmYWxzZX0seyJuYW1lIjoiVVBNIFdlYk1haWwiLCJ1cmwiOiJodHRwczovL3d3dy51cG0uZXMvd2VibWFpbF9hbHVtbm9zLyIsImluZnJhIjpmYWxzZX0seyJuYW1lIjoiV2ViIENvcmVEdW1wZWQiLCJ1cmwiOiJodHRwczovL2NvcmVkdW1wZWQuZXMvIiwiaW5mcmEiOmZhbHNlfSx7Im5hbWUiOiJVUE0gUHLDoWN0aWNhcyBFeHRlcm5hcyIsInVybCI6Imh0dHBzOi8vb3BlLmV0c2lzaS51cG0uZXMvIiwiaW5mcmEiOmZhbHNlfSx7Im5hbWUiOiJBUEkgU2FsYXMgQmlibGlvIiwidXJsIjoiaHR0cHM6Ly9iaWJsaW8ua29saG9zLmNoaWNoYXNvdi5lcy9hcGkvc2FsYXMiLCJpbmZyYSI6dHJ1ZX0seyJuYW1lIjoiQVBJIE1lbnUgRGlhcmlvIiwidXJsIjoiaHR0cHM6Ly9jYWZlLmtvbGhvcy5jaGljaGFzb3YuZXMvIiwiaW5mcmEiOnRydWV9LHsibmFtZSI6IkFQSSBIb3JhcmlvcyIsInVybCI6Imh0dHBzOi8vaG9yYXJpb3Mua29saG9zLmNoaWNoYXNvdi5lcy9ob3JhcmlvIiwiaW5mcmEiOnRydWV9LHsibmFtZSI6IkFQSSBOb3RpY2lhcyIsInVybCI6Imh0dHBzOi8vdW5pbmV3cy5rb2xob3MuY2hpY2hhc292LmVzL25ld3MiLCJpbmZyYSI6dHJ1ZX1d'
+
+volumes:
+    redis_data:
+    mongodb_data:
