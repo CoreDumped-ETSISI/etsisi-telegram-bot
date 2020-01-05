@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/services"
 )
 
 func getEstimatesForStop(stop int) ([]Bus, error) {
-	resp, err := http.Get(fmt.Sprintf("https://emt.kolhos.chichasov.es/api/stop/%v", stop))
+	resp, err := http.Get(fmt.Sprintf(services.Get("emt", 8080) + "/api/stop/%v", stop))
 
 	if err != nil {
 		return nil, err
@@ -26,7 +27,7 @@ func getEstimatesForStop(stop int) ([]Bus, error) {
 }
 
 func getUniEstimates() (*UniversityStops, error) {
-	resp, err := http.Get("https://emt.kolhos.chichasov.es/api/stop")
+	resp, err := http.Get(services.Get("emt", 8080) + "/api/stop")
 
 	if err != nil {
 		return nil, err

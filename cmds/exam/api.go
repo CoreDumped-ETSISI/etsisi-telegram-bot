@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/services"
 )
 
 func getAllExams() ([]Exam, error) {
-	url := "https://exam.kolhos.chichasov.es/"
+	url := services.Get("examenes", 80)
 
 	resp, err := http.Get(url)
 

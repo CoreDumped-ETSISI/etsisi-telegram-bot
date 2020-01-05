@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/state"
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/services"
 
 	tb "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/guad/commander"
@@ -31,7 +32,7 @@ func sendMenuToChat(ctx commander.Context, endpoint string) error {
 		Timeout: 60 * time.Second,
 	}
 
-	resp, err := client.Get(fmt.Sprintf("https://cafe.kolhos.chichasov.es/%s", endpoint))
+	resp, err := client.Get(fmt.Sprintf(services.Get("cafetapi", 8889)+"/%s", endpoint))
 
 	if err != nil {
 		return err

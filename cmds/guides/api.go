@@ -3,10 +3,11 @@ package guides
 import (
 	"encoding/json"
 	"net/http"
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/services"
 )
 
 func getAllGuides() (GuideList, error) {
-	url := "https://guides.kolhos.chichasov.es/"
+	url := services.Get("guias", 80)
 
 	resp, err := http.Get(url)
 

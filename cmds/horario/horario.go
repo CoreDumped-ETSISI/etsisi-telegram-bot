@@ -13,6 +13,8 @@ import (
 	tb "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/guad/commander"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/services"
 )
 
 // A lot of people misinterpret instructions
@@ -152,7 +154,7 @@ func HorarioWeekCmd(ctx commander.Context) error {
 		return err
 	}
 
-	img, err := http.Post("https://renderer.kolhos.chichasov.es/api/horario", "application/json", &buf)
+	img, err := http.Post(services.Get("renderer",8080)+"/api/horario", "application/json", &buf)
 
 	if err != nil {
 		return err

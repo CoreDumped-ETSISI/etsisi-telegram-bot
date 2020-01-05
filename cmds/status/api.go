@@ -3,10 +3,12 @@ package status
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/services"
 )
 
 func getStatus() ([]serviceStatus, error) {
-	resp, err := http.Get("https://status.kolhos.chichasov.es/api/status")
+	resp, err := http.Get(services.Get("unistatus", 8889)+"/api/status")
 
 	if err != nil {
 		return nil, err

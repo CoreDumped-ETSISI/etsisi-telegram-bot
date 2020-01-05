@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
+
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/services"
 )
 
 func fetchFeed(feed string) ([]newsItem, error) {
-	url := "https://uninews.kolhos.chichasov.es/" + feed
+	url := services.Get("uninews", 80) + "/" + feed
 
 	client := &http.Client{
 		Timeout: 60 * time.Second,

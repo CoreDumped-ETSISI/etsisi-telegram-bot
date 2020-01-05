@@ -4,6 +4,7 @@ import (
 	"math"
 	"strings"
 	"time"
+	"os"
 
 	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/state"
 
@@ -50,11 +51,14 @@ func sendStatus(ctx commander.Context, infra bool) error {
 		sb.WriteString(")\n")
 	}
 
-	button := tb.NewInlineKeyboardButtonURL("Más Info", "https://status.kolhos.chichasov.es/")
-	markup := tb.NewInlineKeyboardMarkup([]tb.InlineKeyboardButton{button})
-
 	msg := tb.NewMessage(update.Message.Chat.ID, sb.String())
-	msg.ReplyMarkup = markup
+	
+	if moreInfoURL, ok := os.LookupEnv("STATUS_MORE_INFO_URL"); ok {
+		button := tb.NewInlineKeyboardButtonURL("Más Info", moreInfoURL)
+		markup := tb.NewInlineKeyboardMarkup([]tb.InlineKeyboardButton{button})
+		msg.ReplyMarkup = markup
+	}
+	
 	_, err = bot.Send(msg)
 
 	return err

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"github.com/CoreDumped-ETSISI/etsisi-telegram-bot/services"
 )
 
 var (
@@ -11,7 +12,7 @@ var (
 )
 
 func getAllHorarios() (horarios, error) {
-	resp, err := http.Get("https://horarios.kolhos.chichasov.es/horario")
+	resp, err := http.Get(services.Get("horarios", 80)+"/horario")
 
 	if err != nil {
 		return nil, err
@@ -30,7 +31,7 @@ func getAllHorarios() (horarios, error) {
 }
 
 func getHorarioForGroup(group string) ([][]class, error) {
-	resp, err := http.Get("https://horarios.kolhos.chichasov.es/horario/" + group)
+	resp, err := http.Get(services.Get("horarios", 80)+"/horario/" + group)
 
 	if err != nil {
 		return nil, err
